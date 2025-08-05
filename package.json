@@ -1,0 +1,21 @@
+{
+  "name": "unify-js",
+  "version": "0.1.0",
+  "type": "commonjs",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "test": "node src/index.js"
+  },
+  "devDependencies": {
+    "ts-node": "^10.0.0",
+    "typescript": "^5.0.0"
+  },
+  "keywords": [
+    "compiler",
+    "typescript",
+    "mvp"
+  ],
+  "author": "Hareesh Bhittam",
+  "license": "MIT"
+}
