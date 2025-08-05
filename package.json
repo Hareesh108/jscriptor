@@ -1,21 +1,29 @@
 {
-  "name": "unify-js",
-  "version": "0.1.0",
+  "name": "@hareesh108/unify-js",
+  "version": "0.1.1",
+  "description": "Minimalist testing framework for JavaScript/TypeScript",
   "type": "commonjs",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
     "test": "ts-node src/index.ts"
   },
-  "devDependencies": {
-    "ts-node": "^10.9.2",
-    "typescript": "^5.9.2"
-  },
+  "files": [
+    "dist"
+  ],
   "keywords": [
     "compiler",
     "typescript",
-    "mvp"
+    "mvp",
+    "test",
+    "assert",
+    "minimal"
   ],
   "author": "Hareesh Bhittam",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.2"
+  }
 }
