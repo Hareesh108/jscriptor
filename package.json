@@ -5,11 +5,11 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
-    "test": "node src/index.js"
+    "test": "ts-node src/index.ts"
   },
   "devDependencies": {
-    "ts-node": "^10.0.0",
-    "typescript": "^5.0.0"
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.2"
   },
   "keywords": [
     "compiler",

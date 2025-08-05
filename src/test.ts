@@ -1,21 +1,23 @@
-let failedTests = [];
+// test-utils.ts
 
-const PASS = "✅";
-const FAIL = "❌";
+const failedTests: string[] = [];
 
-function assert(condition, message = "Assertion failed") {
+export const PASS = "✅";
+export const FAIL = "❌";
+
+export function assert(condition: boolean, message: string = "Assertion failed"): void {
   if (!condition) {
     throw new Error(message);
   }
 }
 
-function assertEqual(actual, expected, message = "Values are not equal") {
+export function assertEqual<T>(actual: T, expected: T, message: string = "Values are not equal"): void {
   if (typeof expected === "object" && expected !== null) {
     const actualStr = JSON.stringify(actual);
     const expectedStr = JSON.stringify(expected);
     if (actualStr !== expectedStr) {
       throw new Error(
-        `${message}\nExpected: ${expectedStr}\nActual: ${actualStr}`,
+        `${message}\nExpected: ${expectedStr}\nActual: ${actualStr}`
       );
     }
   } else if (actual !== expected) {
@@ -25,7 +27,7 @@ function assertEqual(actual, expected, message = "Values are not equal") {
 
 let hasPrintedStartMessage = false;
 
-function test(name, testFn) {
+export function test(name: string, testFn: () => void): boolean {
   if (!hasPrintedStartMessage) {
     console.log("Running tests...");
     hasPrintedStartMessage = true;
@@ -37,14 +39,17 @@ function test(name, testFn) {
     return true;
   } catch (error) {
     console.log(`${FAIL} ${name}`);
-    // Hide the stack trace but print the error message.
-    console.error(`   Error: ${error.message}`);
+    if (error instanceof Error) {
+      console.error(`   Error: ${error.message}`);
+    } else {
+      console.error(`   Unknown error: ${error}`);
+    }
     failedTests.push(name);
     return false;
   }
 }
 
-function summarize() {
+export function summarize(): boolean {
   console.log("\n=== Test Summary ===\n");
   if (failedTests.length === 0) {
     console.log(`${PASS} All tests passed!`);
@@ -54,18 +59,7 @@ function summarize() {
     failedTests.forEach((test) => {
       console.log(`  - ${test}`);
     });
-    // Exit with a non-zero code when tests fail
     process.exitCode = 1;
     return false;
   }
 }
-
-// Export functions and constants for use in other files
-module.exports = {
-  test,
-  assert,
-  assertEqual,
-  summarize,
-  PASS,
-  FAIL,
-};
