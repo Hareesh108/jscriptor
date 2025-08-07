@@ -6,6 +6,8 @@
  *  of the code.
  */
 
+import { tokenize } from "./tokenize";
+
 type Token = {
   type: string;
   value?: string;
@@ -396,11 +398,10 @@ function parse(tokenList: Token[]): ASTNode[] {
  * @returns {ASTNode[]} - Statement parse tree nodes
  */
 function compile(sourceCode: string): ASTNode[] {
-  const { tokenize } = require("./tokenize");
   const tokens = tokenize(sourceCode);
-  console.log("tokens:", tokens);
+  // console.log("tokens:", tokens);
   const statements = parse(tokens);
-  console.log("statements:", statements);
+  // console.log("statements:", statements);
   return statements;
 }
 

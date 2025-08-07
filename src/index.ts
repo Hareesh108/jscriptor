@@ -3,7 +3,7 @@ import { compile } from "./parse";
 import { assertEqual, summarize, test } from "./test";
 
 test("Format const declaration", () => {
-  const code = "const x = 5;";
+  const code = "const H = 5;";
   const tree = compile(code);
   const formatted = format(tree);
 
@@ -12,7 +12,7 @@ test("Format const declaration", () => {
 
   assertEqual(
     formatted,
-    "const x = 5;",
+    "const H = 5;",
     "Should format const declaration correctly",
   );
 });
