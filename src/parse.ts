@@ -399,7 +399,7 @@ function parse(tokenList: Token[]): ASTNode[] {
  */
 function compile(sourceCode: string): ASTNode[] {
   const tokens = tokenize(sourceCode);
-  // console.log("tokens:", tokens);
+  console.log("tokens:", tokens);
   const statements = parse(tokens);
   // console.log("statements:", statements);
   return statements;
