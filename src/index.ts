@@ -18,17 +18,17 @@ import { assertEqual, summarize, test } from "./test";
 // });
 
 test("Format arrow function", () => {
-  // const code = "const add = (a, b) => { return a + b; };"
   const filePath = path.join(__dirname, "example.ts");
 
   const code = fs.readFileSync(filePath, "utf-8");
-  console.log("code",code);
   
   const tree = compile(code);
 
-  // const formatted = format(tree);
+  console.log("tree:",tree);
 
-  // console.log("formatted:",formatted);
+  const formatted = format(tree);
+
+  console.log("formatted:",formatted);
   
 
   // assertEqual(

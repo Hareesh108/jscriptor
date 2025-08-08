@@ -811,22 +811,9 @@ function compile(sourceCode) {
   const tokens = tokenize(sourceCode);
   console.log("tokens:",tokens);
   
-  // const statements = parse(tokens);
-  // console.log("statements:",statements);
+  const statements = parse(tokens);
 
-  return [
-  {
-    type: 'ConstDeclaration',
-    id: { type: 'Identifier', name: 'add' },
-    init: {
-      type: 'ArrowFunctionExpression',
-      params: [Array],
-      body: [Object],
-      returnType: null
-    },
-    typeAnnotation: null
-  }
-]
+  return statements
 ;
 }
 
