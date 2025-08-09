@@ -114,7 +114,6 @@ export function tokenize(sourceCode: string): Token[] {
   // Skip whitespace helper
   function skipWhitespace(): void {
     const match = sourceCode.slice(position).match(/^\s+/);
-    console.log("match:",match);
     
     if (match) {
       position += match[0].length;

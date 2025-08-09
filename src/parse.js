@@ -13,7 +13,7 @@
  * @returns {Object} - The root node of the Parse Tree
  */
 function parse(tokens) {
-  
+
   let current = 0; // Current token index
 
   /**
@@ -172,6 +172,12 @@ function parse(tokens) {
       init,
       typeAnnotation,
     };
+
+    console.log("init:",init);
+    
+
+    console.log("constDeclaration:",constDeclaration);
+    
 
     return constDeclaration;
   }
