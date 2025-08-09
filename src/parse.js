@@ -173,12 +173,6 @@ function parse(tokens) {
       typeAnnotation,
     };
 
-    console.log("init:",init);
-    
-
-    console.log("constDeclaration:",constDeclaration);
-    
-
     return constDeclaration;
   }
 

@@ -218,8 +218,6 @@ export function format(
     } else {
       result += formatNode(node.body, indentLevel, indentString);
     }
-
-    console.log("result:", result);
     return result;
   }
 

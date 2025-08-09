@@ -20,22 +20,22 @@ import { assertEqual, summarize, test } from "./test";
 test("Format arrow function", () => {
   const filePath = path.join(__dirname, "example.ts");
 
-  const code = fs.readFileSync(filePath, "utf-8");
+  const code = fs.readFileSync(filePath, "utf-8");  
   
   const tree = compile(code);
 
-  // console.log("tree:",tree);
+  console.log("tree:",tree);
 
-  // const formatted = format(tree);
+  const formatted = format(tree);
 
-  // console.log("formatted:",formatted);
+  console.log("formatted:",formatted);
   
 
-  // assertEqual(
-  //   formatted,
-  //   "const add = (a, b) => {\n  return a + b;\n};",
-  //   "Should format arrow functions with proper indentation",
-  // );
+  assertEqual(
+    formatted,
+    "const add = (a, b) => {\n  return a + b;\n};",
+    "Should format arrow functions with proper indentation",
+  );
 });
 
 summarize();
