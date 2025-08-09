@@ -31,11 +31,11 @@ test("Format arrow function", () => {
   console.log("formatted:",formatted);
   
 
-  // assertEqual(
-  //   formatted,
-  //   "const add = (a, b) => {\n  return a + b;\n};",
-  //   "Should format arrow functions with proper indentation",
-  // );
+  assertEqual(
+    formatted,
+    "const add = (a, b) => {\n  return a + b;\n};",
+    "Should format arrow functions with proper indentation",
+  );
 });
 
 summarize();
