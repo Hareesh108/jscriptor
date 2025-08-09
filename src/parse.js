@@ -13,6 +13,7 @@
  * @returns {Object} - The root node of the Parse Tree
  */
 function parse(tokens) {
+  
   let current = 0; // Current token index
 
   /**
