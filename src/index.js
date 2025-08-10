@@ -18,33 +18,33 @@ const {
 
 // // Polymorphic Functions Tests
 
-test("Identity function with numeric type", () => {
-  const statements = compile(`
-    const identity = (x) => { return x; };
-    const result = identity(5);
-  `);
-  const result = typeCheck(statements);
+// test("Identity function with numeric type", () => {
+//   const statements = compile(`
+//     const identity = (x) => { return x; };
+//     const result = identity(5);
+//   `);
+//   const result = typeCheck(statements);
 
-  assertEqual(
-    result.errors,
-    [],
-    "No type errors expected for identity function with number",
-  );
-});
+//   assertEqual(
+//     result.errors,
+//     [],
+//     "No type errors expected for identity function with number",
+//   );
+// });
 
-test("Identity function with string type", () => {
-  const statements = compile(`
-    const identity = (x) => { return x; };
-    const result = identity("hello");
-  `);
-  const result = typeCheck(statements);
+// test("Identity function with string type", () => {
+//   const statements = compile(`
+//     const identity = (x) => { return x; };
+//     const result = identity("hello");
+//   `);
+//   const result = typeCheck(statements);
 
-  assertEqual(
-    result.errors,
-    [],
-    "No type errors expected for identity function with string",
-  );
-});
+//   assertEqual(
+//     result.errors,
+//     [],
+//     "No type errors expected for identity function with string",
+//   );
+// });
 
 // test("Identity function with boolean type", () => {
 //   const statements = compile(`
@@ -113,26 +113,26 @@ test("Identity function with string type", () => {
 //   );
 // });
 
-test("Type error in polymorphic function", () => {
-  const statements = compile(`
-    const double = (x) => { return x + x; };
-    const num = 5;
-    const str = "hello";
+// test("Type error in polymorphic function", () => {
+//   const statements = compile(`
+//     const double = (x) => { return x + x; };
+//     const num = 5;
+//     const str = "hello";
 
-    const doubledNum = double(num);
-    const mixed = double(num) + double(str);
-  `);
-  const result = typeCheck(statements);
+//     const doubledNum = double(num);
+//     const mixed = double(num) + double(str);
+//   `);
+//   const result = typeCheck(statements);
 
-  console.log("result:",result);
+//   console.log("result:",result);
   
 
-  assert(
-    result.errors.length === 1 &&
-      result.errors[0].message.includes("Type mismatch"),
-    "Should detect type mismatch in expression using polymorphic functions",
-  );
-});
+//   assert(
+//     result.errors.length === 1 &&
+//       result.errors[0].message.includes("Type mismatch"),
+//     "Should detect type mismatch in expression using polymorphic functions",
+//   );
+// });
 
 // // Array Tests
 

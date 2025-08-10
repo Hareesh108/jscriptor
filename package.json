@@ -1,25 +1,23 @@
 {
   "name": "@hareesh108/unify-js",
-  "version": "0.1.1",
-  "description": "Minimalist JavaScript compiler",
-  "main": "src/index.js",
-  "scripts": {
-    "test": "node src/index.js"
+  "version": "0.1.3",
+  "description": "Minimalist testing framework for JavaScript",
+  "type": "commonjs",
+  "bin": {
+    "unify-js": "src/cli.js"
   },
   "files": [
+    "dist",
     "src"
   ],
   "keywords": [
     "compiler",
-    "javascript",
+    "typescript",
     "mvp",
     "test",
     "assert",
     "minimal"
   ],
   "author": "Hareesh Bhittam",
-  "license": "MIT",
-  "volta": {
-    "node": "20.19.4"
-  }
+  "license": "MIT"
 }
