@@ -1,41 +1,115 @@
-// import fs from "fs";
-// import path from "path";
-
-// import { format } from "./formatter";
-const { compile } =  require("./02-parse")
-import { assertEqual, summarize, test } from "./test"
+const { compile } = require("./02-parse");
+// const { nameCheck } = require("./naming");
 const { typeCheck } = require("./03-typecheck");
+const {
+  test,
+  assert,
+  assertEqual,
+  summarize: reportTestFailures,
+} = require("./test");
 
-// test("Format const declaration", () => {
-//   const code = "const x = 5;";
-//   const tree = compile(code);
-//   const formatted = format(tree);  
+// // Basic tests to ensure the type system works
+// test("Type-check empty program", () => {
+//   const statements = compile("");
+//   const result = typeCheck(statements);
+
+//   assertEqual(result.errors, [], "Empty program should have no type errors");
+// });
+
+// // Polymorphic Functions Tests
+
+test("Identity function with numeric type", () => {
+  const statements = compile(`
+    const identity = (x) => { return x; };
+    const result = identity(5);
+  `);
+  const result = typeCheck(statements);
+
+  assertEqual(
+    result.errors,
+    [],
+    "No type errors expected for identity function with number",
+  );
+});
+
+test("Identity function with string type", () => {
+  const statements = compile(`
+    const identity = (x) => { return x; };
+    const result = identity("hello");
+  `);
+  const result = typeCheck(statements);
+
+  assertEqual(
+    result.errors,
+    [],
+    "No type errors expected for identity function with string",
+  );
+});
+
+// test("Identity function with boolean type", () => {
+//   const statements = compile(`
+//     const identity = (x) => { return x; };
+//     const result = identity(true);
+//   `);
+//   const result = typeCheck(statements);
 
 //   assertEqual(
-//     formatted,  
-//     "const x = 5;",
-//     "Should format const declaration correctly",
+//     result.errors,
+//     [],
+//     "No type errors expected for identity function with boolean",
 //   );
 // });
 
-// test("Format arrow function", () => {
-//   const filePath = path.join(__dirname, "example.ts");
-
-//   const code = fs.readFileSync(filePath, "utf-8");  
-  
-//   const tree = compile(code);
-
-//   console.log("tree:",tree);
-
-//   const formatted = format(tree);
-
-//   console.log("formatted:",formatted);
-  
+// test("Higher-order function with function parameter", () => {
+//   const statements = compile(`
+//     const applyToFive = (fn) => { return fn(5); };
+//     const add1 = (x) => { return x + 1; };
+//     const result = applyToFive(add1);
+//   `);
+//   const result = typeCheck(statements);
 
 //   assertEqual(
-//     formatted,
-//     "const add = (a, b) => {\n  return a + b;\n};",
-//     "Should format arrow functions with proper indentation",
+//     result.errors,
+//     [],
+//     "No type errors expected for higher-order function",
+//   );
+// });
+
+// test("Higher-order function with different function types", () => {
+//   const statements = compile(`
+//     const applyFn = (fn, x) => { return fn(x); };
+//     const add1 = (x) => { return x + 1; };
+//     const numResult = applyFn(add1, 5);
+
+//     const concat = (s) => { return s + "!"; };
+//     const strResult = applyFn(concat, "hello");
+//   `);
+//   const result = typeCheck(statements);
+
+//   assertEqual(
+//     result.errors,
+//     [],
+//     "No type errors expected for polymorphic higher-order function",
+//   );
+// });
+
+// test("Type-preserving function chain", () => {
+//   const statements = compile(`
+//     const double = (x) => { return x + x; };
+//     const addExclamation = (x) => { return x + "!"; };
+
+//     const num = 5;
+//     const doubledNum = double(num);
+
+//     const str = "hello";
+//     const exclaimed = addExclamation(str);
+//   `);
+//   const result = typeCheck(statements);
+
+//   assertEqual(
+//     result.errors,
+//     [],
+//     "No type errors expected for type-preserving function chain",
 //   );
 // });
 
@@ -60,4 +134,100 @@ test("Type error in polymorphic function", () => {
   );
 });
 
-summarize();
+// // Array Tests
+
+// test("Homogeneous number array", () => {
+//   const statements = compile(`
+//     const numbers = [1, 2, 3, 4, 5];
+//   `);
+//   const result = typeCheck(statements);
+
+//   assertEqual(
+//     result.errors,
+//     [],
+//     "No type errors expected for homogeneous number array",
+//   );
+// });
+
+// test("Homogeneous string array", () => {
+//   const statements = compile(`
+//     const strings = ["a", "b", "c", "d"];
+//   `);
+//   const result = typeCheck(statements);
+
+//   assertEqual(
+//     result.errors,
+//     [],
+//     "No type errors expected for homogeneous string array",
+//   );
+// });
+
+// test("Homogeneous boolean array", () => {
+//   const statements = compile(`
+//     const booleans = [true, false, true, true];
+//   `);
+//   const result = typeCheck(statements);
+
+//   assertEqual(
+//     result.errors,
+//     [],
+//     "No type errors expected for homogeneous boolean array",
+//   );
+// });
+
+// test("Detect heterogeneous array type mismatch", () => {
+//   const statements = compile(`
+//     const mixed = [1, "hello", true];
+//   `);
+//   const result = typeCheck(statements);
+
+//   assert(
+//     result.errors.length > 0 && result.errors[0].message.includes("array"),
+//     "Should detect type mismatch in heterogeneous array",
+//   );
+// });
+
+// test("Nested arrays with consistent types", () => {
+//   const statements = compile(`
+//     const matrix = [[1, 2], [3, 4], [5, 6]];
+//   `);
+//   const result = typeCheck(statements);
+
+//   assertEqual(
+//     result.errors,
+//     [],
+//     "No type errors expected for nested arrays with consistent types",
+//   );
+// });
+
+// test("Array-returning function", () => {
+//   const statements = compile(`
+//     const makeArray = (x, y, z) => { return [x, y, z]; };
+//     const numbers = makeArray(1, 2, 3);
+//   `);
+//   const result = typeCheck(statements);
+
+//   assertEqual(
+//     result.errors,
+//     [],
+//     "No type errors expected for array-returning function",
+//   );
+// });
+
+// test("Function creating different array types", () => {
+//   const statements = compile(`
+//     const repeat = (x) => { return [x, x, x]; };
+//     const numbers = repeat(42);
+//     const strings = repeat("hello");
+//   `);
+//   const result = typeCheck(statements);
+
+//   assertEqual(
+//     result.errors,
+//     [],
+//     "No type errors expected for polymorphic array-creating function",
+//   );
+// });
+
+// Report test results
+reportTestFailures();

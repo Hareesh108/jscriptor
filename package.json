@@ -1,20 +1,17 @@
 {
   "name": "@hareesh108/unify-js",
   "version": "0.1.1",
-  "description": "Minimalist testing framework for JavaScript/TypeScript",
-  "type": "commonjs",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "description": "Minimalist JavaScript compiler",
+  "main": "src/index.js",
   "scripts": {
-    "build": "tsc",
-    "test": "src/index.js"
+    "test": "node src/index.js"
   },
   "files": [
-    "dist"
+    "src"
   ],
   "keywords": [
     "compiler",
-    "typescript",
+    "javascript",
     "mvp",
     "test",
     "assert",
