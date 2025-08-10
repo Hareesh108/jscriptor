@@ -7,7 +7,7 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "test": "ts-node src/index.ts"
+    "test": "src/index.js"
   },
   "files": [
     "dist"
@@ -22,8 +22,7 @@
   ],
   "author": "Hareesh Bhittam",
   "license": "MIT",
-  "devDependencies": {
-    "ts-node": "^10.9.2",
-    "typescript": "^5.9.2"
+  "volta": {
+    "node": "20.19.4"
   }
 }

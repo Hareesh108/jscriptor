@@ -13,7 +13,6 @@
  * @returns {Object} - The root node of the Parse Tree
  */
 function parse(tokens) {
-
   let current = 0; // Current token index
 
   /**
@@ -363,37 +362,6 @@ function parse(tokens) {
       elements,
       position,
     };
-  }
-
-  /**
-   * Parse array member access expression (e.g. arr[0])
-   */
-  function parseMemberExpression(object) {
-    next(); // consume LEFT_BRACKET
-
-    // Parse the index expression
-    const index = parseExpression();
-
-    expect("RIGHT_BRACKET", "Expected closing bracket for array access");
-
-    const node = {
-      type: "MemberExpression",
-      object,
-      index,
-      position: object.position,
-    };
-
-    // Handle chained access like arr[0][1]
-    if (current < tokens.length && check("LEFT_BRACKET")) {
-      return parseMemberExpression(node);
-    }
-
-    // Handle function call on array element like arr[0]()
-    if (current < tokens.length && check("LEFT_PAREN")) {
-      return parseCallExpression(node);
-    }
-
-    return node;
   }
 
   /**
@@ -760,11 +728,6 @@ function parse(tokens) {
       );
     }
 
-    // Check for member expressions with dot notation
-    while (current < tokens.length && check("DOT")) {
-      node = parseMemberExpression(node);
-    }
-
     return node;
   }
 
@@ -807,14 +770,12 @@ function parse(tokens) {
  * @returns {Array} - Statement parse tree nodes
  */
 function compile(sourceCode) {
-  const { tokenize } = require("./tokenize");
+  const { tokenize } = require("./01-tokenize");
 
   const tokens = tokenize(sourceCode);
-  
   const statements = parse(tokens);
 
-  return statements
-;
+  return statements;
 }
 
 module.exports = {
