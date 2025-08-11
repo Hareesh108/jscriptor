@@ -7,9 +7,6 @@ const { typeCheck } = require("./03-typecheck");
 // Get the filename from command-line args
 const filePath = process.argv[2];
 
-console.log("filePath:",filePath);
-
-
 if (!filePath) {
   console.error("❌ Please provide a file to typecheck. Example: unify-js myProgram.js");
   process.exit(1);
@@ -23,9 +20,6 @@ if (!fs.existsSync(absolutePath)) {
 }
 
 const sourceCode = fs.readFileSync(absolutePath, "utf8");
-
-console.log("sourceCode:",sourceCode);
-
 
 // Run compile + typeCheck
 try {
