@@ -1,0 +1,15 @@
+{
+  "name": "example",
+  "version": "1.0.0",
+  "description": "Unify js testing",
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "unify-js index.js"
+  },
+  "dependencies": {
+    "@hareesh108/unify-js": "^1.0.0"
+  }
+}
