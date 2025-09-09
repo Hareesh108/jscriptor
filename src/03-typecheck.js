@@ -554,25 +554,22 @@ function visitConstDeclaration(node) {
     } else if (
       node.typeAnnotation.type === "UnionTypeAnnotation"
     ) {
-      // Try to satisfy at least one branch
-      let satisfied = false;
-      // The union stores types in 'types'
+      // Match union by concrete type name, then unify without logging speculative errors
       const options = node.typeAnnotation.types || [];
+      const initConcrete = getConcreteTypeName(initType);
+      let chosen = null;
       for (const opt of options) {
         const optType = typeFromAnnotation(opt);
-        // Try a speculative unify on copies of db could be complex; perform direct unify
-        // Accept the first that unifies without immediate concrete mismatch
-        const before = db.slice();
-        const ok = unify(initType, optType, node);
-        if (ok) {
-          satisfied = true;
-          break;
-        } else {
-          // restore db if failed
-          db = before;
+        const optConcrete = getConcreteTypeName(optType);
+        if (initConcrete && optConcrete && initConcrete !== optConcrete) {
+          continue; // incompatible concrete types
         }
+        chosen = optType;
+        break;
       }
-      if (!satisfied) {
+      if (chosen) {
+        unify(initType, chosen, node);
+      } else {
         reportError(
           `Type mismatch: value does not match any type in the union`,
           node,
