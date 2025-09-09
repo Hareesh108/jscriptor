@@ -370,164 +370,109 @@ function parse(tokens) {
   function parseTypeAnnotation() {
     // The colon should have already been consumed by the caller
 
-    // Parse the type
-    if (check("TYPE_NUMBER") || check("TYPE_FLOAT")) {
-      const token = next().type;
-      const typeName = token === "TYPE_NUMBER" ? "number" : "Float";
-      return {
-        type: "TypeAnnotation",
-        valueType: typeName,
-      };
-    }
+    function parsePrimaryType() {
+      if (check("TYPE_NUMBER") || check("TYPE_FLOAT")) {
+        const token = next().type;
+        const typeName = token === "TYPE_NUMBER" ? "number" : "Float";
+        return { type: "TypeAnnotation", valueType: typeName };
+      }
 
-    if (check("TYPE_INT")) {
-      next();
-      return {
-        type: "TypeAnnotation",
-        valueType: "Void",
-      };
-    }
+      if (check("TYPE_INT")) {
+        next();
+        return { type: "TypeAnnotation", valueType: "Void" };
+      }
 
-    if (check("TYPE_STRING")) {
-      next();
-      return {
-        type: "TypeAnnotation",
-        valueType: "string",
-      };
-    }
+      if (check("TYPE_STRING")) {
+        next();
+        return { type: "TypeAnnotation", valueType: "string" };
+      }
 
-    if (check("TYPE_BOOLEAN") || check("TYPE_BOOL")) {
-      const token = next().type;
-      const typeName = token === "TYPE_BOOLEAN" ? "boolean" : "Bool";
-      return {
-        type: "TypeAnnotation",
-        valueType: typeName,
-      };
-    }
+      if (check("TYPE_BOOLEAN") || check("TYPE_BOOL")) {
+        const token = next().type;
+        const typeName = token === "TYPE_BOOLEAN" ? "boolean" : "Bool";
+        return { type: "TypeAnnotation", valueType: typeName };
+      }
 
-    // Explicitly reject 'any' type
-    if (check("IDENTIFIER") && peek().value === "any") {
-      throw new Error(
-        `The 'any' type is not supported in this compiler (at position ${peek().position})`,
-      );
-    }
+      // Explicitly reject 'any' type
+      if (check("IDENTIFIER") && peek().value === "any") {
+        throw new Error(
+          `The 'any' type is not supported in this compiler (at position ${peek().position})`,
+        );
+      }
 
-    if (check("TYPE_VOID") || check("TYPE_UNIT")) {
-      const token = next().type;
-      const typeName = token === "TYPE_VOID" ? "void" : "Unit";
-      return {
-        type: "TypeAnnotation",
-        valueType: typeName,
-      };
-    }
+      if (check("TYPE_VOID") || check("TYPE_UNIT")) {
+        const token = next().type;
+        const typeName = token === "TYPE_VOID" ? "void" : "Unit";
+        return { type: "TypeAnnotation", valueType: typeName };
+      }
 
-    // Array<T> syntax
-    if (check("TYPE_ARRAY")) {
-      next(); // consume TYPE_ARRAY
-
-      // Check for generic parameter
-      if (check("LESS_THAN")) {
-        next(); // consume "<"
-
-        // Parse the element type between the < >
-        if (check("TYPE_NUMBER")) {
-          next(); // consume TYPE_NUMBER
+      // Array<T> syntax
+      if (check("TYPE_ARRAY")) {
+        next(); // consume TYPE_ARRAY
+        if (check("LESS_THAN")) {
+          next(); // consume "<"
+          const elementType = parseTypeAnnotation();
           expect("GREATER_THAN", "Expected > to close Array type");
-
-          return {
-            type: "ArrayTypeAnnotation",
-            elementType: { type: "TypeAnnotation", valueType: "number" },
-          };
+          return { type: "ArrayTypeAnnotation", elementType };
         }
+        return { type: "TypeAnnotation", valueType: "Array" };
+      }
 
-        if (check("TYPE_STRING")) {
-          next(); // consume TYPE_STRING
-          expect("GREATER_THAN", "Expected > to close Array type");
-
-          return {
-            type: "ArrayTypeAnnotation",
-            elementType: { type: "TypeAnnotation", valueType: "string" },
-          };
+      // T[] syntax and named types
+      if (check("IDENTIFIER")) {
+        const baseType = { type: "TypeAnnotation", valueType: next().value };
+        if (check("LEFT_BRACKET")) {
+          next();
+          expect("RIGHT_BRACKET", "Expected closing bracket for array type");
+          return { type: "ArrayTypeAnnotation", elementType: baseType };
         }
+        return baseType;
+      }
 
-        if (check("TYPE_BOOLEAN")) {
-          next(); // consume TYPE_BOOLEAN
-          expect("GREATER_THAN", "Expected > to close Array type");
+      // Function type: (params) => Return
+      if (check("LEFT_PAREN")) {
+        const paramTypes = parseParameterTypeList();
+        expect("ARROW", "Expected => in function type");
+        const returnType = parseTypeAnnotation();
+        return { type: "FunctionTypeAnnotation", paramTypes, returnType };
+      }
 
-          return {
-            type: "ArrayTypeAnnotation",
-            elementType: { type: "TypeAnnotation", valueType: "boolean" },
-          };
+      // Object type: { a: Type, b: Type }
+      if (check("LEFT_CURLY")) {
+        next();
+        const fields = [];
+        if (check("RIGHT_CURLY")) {
+          next();
+          return { type: "ObjectTypeAnnotation", fields };
         }
-
-        if (check("IDENTIFIER")) {
-          // Check for 'any' type before consuming it
-          if (peek().value === "any") {
-            throw new Error(
-              `'any' type is not supported at position ${peek().position}`,
-            );
+        while (current < tokens.length && !check("RIGHT_CURLY")) {
+          const fieldName = expect("IDENTIFIER", "Expected field name").value;
+          expect("COLON", "Expected : after field name");
+          const fieldType = parseTypeAnnotation();
+          fields.push({ name: fieldName, typeAnnotation: fieldType });
+          if (check("COMMA")) {
+            next();
+          } else {
+            break;
           }
-
-          const baseType = next().value;
-          expect("GREATER_THAN", "Expected > to close Array type");
-
-          return {
-            type: "ArrayTypeAnnotation",
-            elementType: { type: "TypeAnnotation", valueType: baseType },
-          };
         }
-
-        // More complex element type
-        const elementType = parseTypeAnnotation();
-        expect("GREATER_THAN", "Expected > to close Array type");
-
-        return {
-          type: "ArrayTypeAnnotation",
-          elementType,
-        };
+        expect("RIGHT_CURLY", "Expected } to close object type");
+        return { type: "ObjectTypeAnnotation", fields };
       }
 
-      // Just "Array" without generic parameter
-      return {
-        type: "TypeAnnotation",
-        valueType: "Array",
-      };
+      throw new Error(`Expected type annotation at position ${peek().position}`);
     }
 
-    // T[] syntax
-    if (check("IDENTIFIER")) {
-      const baseType = {
-        type: "TypeAnnotation",
-        valueType: next().value,
-      };
-
-      // Check for array bracket notation
-      if (check("LEFT_BRACKET")) {
-        next(); // consume LEFT_BRACKET
-        expect("RIGHT_BRACKET", "Expected closing bracket for array type");
-        return {
-          type: "ArrayTypeAnnotation",
-          elementType: baseType,
-        };
-      }
-
-      return baseType;
+    // Parse left and then fold with '|'
+    let typeNode = parsePrimaryType();
+    while (check("PIPE")) {
+      next();
+      const right = parsePrimaryType();
+      const leftTypes = typeNode.type === "UnionTypeAnnotation" ? typeNode.types : [typeNode];
+      const rightTypes = right.type === "UnionTypeAnnotation" ? right.types : [right];
+      typeNode = { type: "UnionTypeAnnotation", types: [...leftTypes, ...rightTypes] };
     }
-
-    // Function type syntax: (param: Type) => ReturnType
-    if (check("LEFT_PAREN")) {
-      const paramTypes = parseParameterTypeList();
-      expect("ARROW", "Expected => in function type");
-      const returnType = parseTypeAnnotation();
-
-      return {
-        type: "FunctionTypeAnnotation",
-        paramTypes,
-        returnType,
-      };
-    }
-
-    throw new Error(`Expected type annotation at position ${peek().position}`);
+    return typeNode;
   }
 
   /**
@@ -592,6 +537,67 @@ function parse(tokens) {
         // Check for empty parameter list
         if (check("RIGHT_PAREN")) {
           next(); // Skip the ')'
+          // Support optional return type after empty params: (): Type =>
+          if (check("COLON")) {
+            next(); // skip ':'
+            // Naively skip a simple type annotation for lookahead purposes
+            if (
+              check("TYPE_NUMBER") ||
+              check("TYPE_STRING") ||
+              check("TYPE_BOOLEAN") ||
+              check("TYPE_VOID") ||
+              check("TYPE_ARRAY") ||
+              check("IDENTIFIER")
+            ) {
+              next();
+              // Handle T[] syntax
+              if (check("LEFT_BRACKET")) {
+                next();
+                if (check("RIGHT_BRACKET")) next();
+              }
+              // Handle Array<...> generic
+              if (check("LESS_THAN")) {
+                // Skip until '>' (best-effort)
+                next();
+                while (!check("GREATER_THAN") && current < tokens.length) {
+                  next();
+                }
+                if (check("GREATER_THAN")) next();
+              }
+            } else if (check("LEFT_CURLY")) {
+              // Skip object type: { a: T, ... }
+              let depth = 0;
+              do {
+                if (check("LEFT_CURLY")) depth++;
+                if (check("RIGHT_CURLY")) depth--;
+                next();
+              } while (depth > 0 && current < tokens.length);
+            } else if (check("LEFT_PAREN")) {
+              // Function type: (p:T)=>U
+              // Skip params list
+              next();
+              let paren = 1;
+              while (paren > 0 && current < tokens.length) {
+                if (check("LEFT_PAREN")) paren++;
+                else if (check("RIGHT_PAREN")) paren--;
+                next();
+              }
+              if (check("ARROW")) {
+                next();
+                // Skip return type (simple)
+                if (
+                  check("TYPE_NUMBER") ||
+                  check("TYPE_STRING") ||
+                  check("TYPE_BOOLEAN") ||
+                  check("TYPE_VOID") ||
+                  check("TYPE_ARRAY") ||
+                  check("IDENTIFIER")
+                ) {
+                  next();
+                }
+              }
+            }
+          }
           if (check("ARROW")) {
             isArrowFunction = true;
           }
@@ -722,6 +728,9 @@ function parse(tokens) {
     } else if (check("LEFT_BRACKET")) {
       // Array literal
       node = parseArrayLiteral();
+    } else if (check("LEFT_CURLY")) {
+      // Object literal
+      node = parseObjectLiteral();
     } else {
       throw new Error(
         `Unexpected token type in expression: ${peek().type} at position ${peek().position}`,
@@ -729,6 +738,44 @@ function parse(tokens) {
     }
 
     return node;
+  }
+
+  /**
+   * Parse an object literal: { key: expr, ... }
+   */
+  function parseObjectLiteral() {
+    const properties = [];
+    next(); // consume LEFT_CURLY
+
+    // Empty object
+    if (check("RIGHT_CURLY")) {
+      next();
+      return { type: "ObjectLiteral", properties };
+    }
+
+    while (current < tokens.length && !check("RIGHT_CURLY")) {
+      let keyToken;
+      if (check("IDENTIFIER") || check("STRING")) {
+        keyToken = next();
+      } else {
+        throw new Error(
+          `Expected object property name, got ${peek().type} at ${peek().position}`,
+        );
+      }
+      expect("COLON", "Expected ':' after object property name");
+      const value = parseExpression();
+      const keyName =
+        keyToken.type === "STRING" ? keyToken.value.slice(1, -1) : keyToken.value;
+      properties.push({ type: "Property", key: keyName, value });
+      if (check("COMMA")) {
+        next();
+      } else {
+        break;
+      }
+    }
+
+    expect("RIGHT_CURLY", "Expected '}' to close object literal");
+    return { type: "ObjectLiteral", properties };
   }
 
   /**

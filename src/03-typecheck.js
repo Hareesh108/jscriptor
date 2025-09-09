@@ -12,7 +12,22 @@
 let db = [];
 let errors = [];
 let nextTypeId = 0;
-let scope = {}; // Variable scope to track types
+let scopes = [{}]; // Stack of scopes for lexical scoping
+
+function currentScope() {
+  return scopes[scopes.length - 1];
+}
+
+function defineInCurrentScope(name, typeId) {
+  currentScope()[name] = typeId;
+}
+
+function lookupInScopes(name) {
+  for (let i = scopes.length - 1; i >= 0; i--) {
+    if (scopes[i][name] !== undefined) return scopes[i][name];
+  }
+  return undefined;
+}
 
 /**
  * Create a new type variable (type id)
@@ -92,6 +107,79 @@ function getConcreteTypeName(typeId) {
   }
 
   return null;
+}
+
+// Object type helpers (minimal structural representation)
+function createObjectType(fieldMap) {
+  const id = nextTypeId++;
+  db[id] = { object: fieldMap };
+  return id;
+}
+
+function isObjectType(typeId) {
+  const ultimate = resolveSymlinksAndCompress(typeId);
+  const entry = db[ultimate];
+  return entry && entry.object !== undefined;
+}
+
+/**
+ * Convert a parsed type annotation node into a concrete type id
+ * For this minimal system, we only track the top-level constructor
+ */
+function typeFromAnnotation(annotationNode) {
+  if (!annotationNode) return freshTypeId();
+
+  // Normalize simple TypeAnnotation names
+  if (annotationNode.type === "TypeAnnotation") {
+    const value = annotationNode.valueType;
+    switch (value) {
+      case "number":
+        return createConcreteType("Number");
+      case "string":
+        return createConcreteType("String");
+      case "boolean":
+        return createConcreteType("Boolean");
+      case "void":
+      case "Void":
+        return createConcreteType("Void");
+      case "Array":
+        return createConcreteType("Array");
+      default: {
+        // Fallback: capitalize first letter and use as concrete type
+        const normalized =
+          typeof value === "string" && value.length > 0
+            ? value[0].toUpperCase() + value.slice(1)
+            : "Unknown";
+        return createConcreteType(normalized);
+      }
+    }
+  }
+
+  // ArrayTypeAnnotation collapses to Array for this minimal system
+  if (annotationNode.type === "ArrayTypeAnnotation") {
+    return createConcreteType("Array");
+  }
+
+  // FunctionTypeAnnotation collapses to Function for this minimal system
+  if (annotationNode.type === "FunctionTypeAnnotation") {
+    return createConcreteType("Function");
+  }
+
+  // Object type annotations -> object with field map
+  if (annotationNode.type === "ObjectTypeAnnotation") {
+    const fields = {};
+    for (const f of annotationNode.fields) {
+      fields[f.name] = typeFromAnnotation(f.typeAnnotation);
+    }
+    return createObjectType(fields);
+  }
+
+  // Union types collapse to a fresh variable (constrained at use sites)
+  if (annotationNode.type === "UnionTypeAnnotation") {
+    return freshTypeId();
+  }
+
+  return freshTypeId();
 }
 
 /**
@@ -199,6 +287,9 @@ function visitNode(node) {
     case "BlockStatement":
       return visitBlockStatement(node);
 
+    case "ObjectLiteral":
+      return visitObjectLiteral(node);
+
     case "StringLiteral":
       return createConcreteType("String");
 
@@ -222,8 +313,9 @@ function visitNode(node) {
  */
 function visitIdentifier(node) {
   // Look up the variable in the scope
-  if (scope[node.name] !== undefined) {
-    node.typeId = scope[node.name];
+  const found = lookupInScopes(node.name);
+  if (found !== undefined) {
+    node.typeId = found;
     return node.typeId;
   }
 
@@ -323,30 +415,34 @@ function visitBinaryExpression(node) {
  * @returns {number} - The type id of the function
  */
 function visitArrowFunction(node) {
+  // Enter new scope for parameters and function body
+  scopes.push({});
+
+  // Define parameters in the new scope, honoring annotations
+  for (const param of node.params) {
+    const paramType = param.typeAnnotation
+      ? typeFromAnnotation(param.typeAnnotation)
+      : freshTypeId();
+    param.typeId = paramType;
+    defineInCurrentScope(param.name, paramType);
+  }
+
   // Type check function body
   const bodyType = visitNode(node.body);
+  // Expose inferred return type for external annotation checks
+  node.inferredReturnTypeId = bodyType;
 
-  // If there's a return type annotation, check it matches the body
+  // If there's a return type annotation, ensure it matches the body
   if (node.returnType) {
-    // In a real implementation, process the return type annotation
-    // and unify it with bodyType
+    const annotatedReturn = typeFromAnnotation(node.returnType);
+    unify(bodyType, annotatedReturn, node);
   }
 
-  // For each parameter, create a type
-  for (const param of node.params) {
-    param.typeId = freshTypeId();
+  // Exit scope
+  scopes.pop();
 
-    // If there's a type annotation, use it
-    if (param.typeAnnotation) {
-      // In a real implementation, process the type annotation
-      // and unify it with param.typeId
-    }
-  }
-
-  // Create a function type - in a real implementation
-  // this would capture parameter and return types
-  const functionTypeId = freshTypeId();
-  return functionTypeId;
+  // Represent function type as a concrete Function (minimal)
+  return createConcreteType("Function");
 }
 
 /**
@@ -356,7 +452,7 @@ function visitArrowFunction(node) {
  * @returns {number} - The type id of the call result
  */
 function visitCallExpression(node) {
-  const calleeType = visitNode(node.callee);
+  visitNode(node.callee);
 
   // Create a return type for the function
   const returnType = freshTypeId();
@@ -372,7 +468,7 @@ function visitCallExpression(node) {
 
     // For polymorphic functions, the return type is determined by the argument types
     // Here we're establishing that relationship in our type system
-    if (node.callee.type === "Identifier" && scope[node.callee.name]) {
+    if (node.callee.type === "Identifier" && lookupInScopes(node.callee.name)) {
       // For known functions in scope, the return type should match the body's type
       // For simple polymorphic functions like (x) => x + x, the return type matches the input type
       if (node.arguments.length === 1) {
@@ -396,13 +492,112 @@ function visitConstDeclaration(node) {
   // Assign type to the declared identifier
   node.id.typeId = initType;
 
-  // Add the variable to scope
-  scope[node.id.name] = initType;
+  // Add the variable to current scope
+  defineInCurrentScope(node.id.name, initType);
 
   // If there's a type annotation, check it matches the initialization
   if (node.typeAnnotation) {
-    // In a real implementation, process the type annotation
-    // and unify it with initType
+    // Special handling: if annotation is a function type and init is a function
+    if (
+      node.typeAnnotation.type === "FunctionTypeAnnotation" &&
+      node.init &&
+      node.init.type === "ArrowFunctionExpression"
+    ) {
+      // Unify return type
+      const annotatedReturn = typeFromAnnotation(
+        node.typeAnnotation.returnType,
+      );
+      if (node.init.inferredReturnTypeId !== undefined) {
+        unify(node.init.inferredReturnTypeId, annotatedReturn, node);
+      }
+
+      // Unify parameter types positionally
+      const annotatedParams = node.typeAnnotation.paramTypes || [];
+      for (let i = 0; i < Math.min(annotatedParams.length, node.init.params.length); i++) {
+        const paramAnnoType = typeFromAnnotation(annotatedParams[i].typeAnnotation);
+        const actualParam = node.init.params[i];
+        if (actualParam.typeId === undefined) {
+          actualParam.typeId = freshTypeId();
+        }
+        unify(actualParam.typeId, paramAnnoType, node);
+      }
+
+      // Overall function type is represented minimally; still unify top-level
+      const annotatedFunc = createConcreteType("Function");
+      unify(initType, annotatedFunc, node);
+    } else if (
+      node.typeAnnotation.type === "ObjectTypeAnnotation" &&
+      node.init &&
+      node.init.type === "ObjectLiteral"
+    ) {
+      // Enforce object fields per annotation
+      const annotatedObjType = typeFromAnnotation(node.typeAnnotation);
+      // For each annotated field, find in init and unify
+      const initProps = Object.fromEntries(
+        node.init.properties.map((p) => [p.key, p])
+      );
+      for (const field of node.typeAnnotation.fields) {
+        const prop = initProps[field.name];
+        if (!prop) {
+          reportError(
+            `Type mismatch: missing field '${field.name}' in object literal`,
+            node,
+          );
+          continue;
+        }
+        const propType = visitNode(prop.value);
+        const fieldAnnoType = typeFromAnnotation(field.typeAnnotation);
+        unify(propType, fieldAnnoType, prop.value);
+      }
+      // Unify overall object types
+      unify(initType, annotatedObjType, node);
+    } else if (
+      node.typeAnnotation.type === "UnionTypeAnnotation"
+    ) {
+      // Try to satisfy at least one branch
+      let satisfied = false;
+      // The union stores types in 'types'
+      const options = node.typeAnnotation.types || [];
+      for (const opt of options) {
+        const optType = typeFromAnnotation(opt);
+        // Try a speculative unify on copies of db could be complex; perform direct unify
+        // Accept the first that unifies without immediate concrete mismatch
+        const before = db.slice();
+        const ok = unify(initType, optType, node);
+        if (ok) {
+          satisfied = true;
+          break;
+        } else {
+          // restore db if failed
+          db = before;
+        }
+      }
+      if (!satisfied) {
+        reportError(
+          `Type mismatch: value does not match any type in the union`,
+          node,
+        );
+      }
+    } else if (
+      node.typeAnnotation.type === "ArrayTypeAnnotation" &&
+      node.init &&
+      node.init.type === "ArrayLiteral"
+    ) {
+      // Enforce element type annotation on array literal elements
+      const elementAnnoType = typeFromAnnotation(
+        node.typeAnnotation.elementType,
+      );
+      for (const el of node.init.elements) {
+        const elType = visitNode(el);
+        unify(elType, elementAnnoType, el);
+      }
+      // Unify overall array type
+      const annotated = typeFromAnnotation(node.typeAnnotation);
+      unify(initType, annotated, node);
+    } else {
+      const annotated = typeFromAnnotation(node.typeAnnotation);
+      unify(initType, annotated, node);
+    }
   }
 
   return initType;
@@ -417,10 +612,12 @@ function visitConstDeclaration(node) {
 function visitBlockStatement(node) {
   let lastType = createConcreteType("Void");
 
-  // Visit each statement in the block
+  // Each block introduces a new scope
+  scopes.push({});
   for (const statement of node.body) {
     lastType = visitNode(statement);
   }
+  scopes.pop();
 
   return lastType;
 }
@@ -536,6 +733,17 @@ function visitArrayLiteral(node) {
   return createConcreteType("Array");
 }
 
+function visitObjectLiteral(node) {
+  const fields = {};
+  for (const prop of node.properties) {
+    fields[prop.key] = visitNode(prop.value);
+  }
+  // Store as object type entry
+  const id = nextTypeId++;
+  db[id] = { object: fields };
+  return id;
+}
+
 /**
  * Perform type checking on a parse tree
  *
@@ -547,7 +755,7 @@ function typeCheck(statements) {
   db = [];
   errors = [];
   nextTypeId = 0;
-  scope = {}; // Reset the scope
+  scopes = [{}]; // Reset the scope stack
 
   // Visit each statement in the program
   for (const statement of statements) {
