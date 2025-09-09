@@ -1,6 +1,6 @@
 {
   "name": "@hareesh108/unify-js",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Minimalist testing framework for JavaScript",
   "type": "commonjs",
   "bin": {
