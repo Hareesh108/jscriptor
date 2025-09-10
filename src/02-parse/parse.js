@@ -1,5 +1,5 @@
-const { parseArrayLiteral } = require("./parse-array");
-const { parseFunction } = require("./parse-func");
+const { parseArrayLiteral } = require("./utils/parse-array");
+const { parseFunction } = require("./utils/parse-func");
 
 /**
  * Parsing (aka Syntax Analysis)
