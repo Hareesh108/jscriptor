@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 const fs = require("fs");
 const path = require("path");
-const { compile } = require("./02-parse");
+const { compile } = require("./compile");
 const { typeCheck } = require("./03-typecheck");
 
 // Get the filename from command-line args

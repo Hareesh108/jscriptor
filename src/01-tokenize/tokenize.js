@@ -1,3 +1,5 @@
+const { TOKEN_PATTERNS } = require("./utils");
+
 /**
  * Tokenize source code into a stream of tokens
  *

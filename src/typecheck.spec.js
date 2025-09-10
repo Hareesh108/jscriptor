@@ -1,5 +1,5 @@
 const { test, assert, assertEqual, summarize } = require("./test");
-const { compile } = require("./02-parse");
+const { compile } = require("./compile");
 const { typeCheck } = require("./03-typecheck");
 
 function runTypeCheck(source) {

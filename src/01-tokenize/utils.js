@@ -5,7 +5,7 @@
  * Afterwards, these tokens wil lbe given to the parser.
  */
 
-export const TOKEN_PATTERNS = [
+const TOKEN_PATTERNS = [
   // Comments
   { type: "COMMENT", regex: /^\/\/.*?(?:\n|$)/ }, // Single-line comments
   { type: "COMMENT", regex: /^\/\*[\s\S]*?\*\// }, // Multi-line comments
@@ -51,3 +51,8 @@ export const TOKEN_PATTERNS = [
   { type: "STRING", regex: /^"([^"\\]|\\.)*("|$)/ }, // String literals with double quotes
   { type: "STRING", regex: /^'([^'\\]|\\.)*(\'|$)/ }, // String literals with single quotes
 ];
+
+
+module.exports = {
+  TOKEN_PATTERNS,
+};
