@@ -817,7 +817,7 @@ function parse(tokens) {
  * @returns {Array} - Statement parse tree nodes
  */
 function compile(sourceCode) {
-  const { tokenize } = require("./01-tokenize");
+  const { tokenize } = require("./01-tokenize/tokenize");
 
   const tokens = tokenize(sourceCode);
   const statements = parse(tokens);
