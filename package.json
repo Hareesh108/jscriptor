@@ -21,6 +21,6 @@
   "author": "Hareesh Bhittam",
   "license": "MIT",
   "scripts": {
-    "test": "node src/typecheck.spec.js"
+    "test": "node src/test/typecheck.spec.js"
   }
 }
