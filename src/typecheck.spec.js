@@ -1,6 +1,6 @@
 const { test, assert, assertEqual, summarize } = require("./test");
 const { compile } = require("./compile");
-const { typeCheck } = require("./03-typecheck");
+const { typeCheck } = require("./03-typecheck/types");
 
 function runTypeCheck(source) {
   const ast = compile(source);
