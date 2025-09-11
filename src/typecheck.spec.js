@@ -13,30 +13,30 @@ test("const annotation matches initializer", () => {
   assertEqual(res.errors, [], "Expected no errors for valid numeric ops");
 });
 
-// test("const annotation mismatch reports error", () => {
-//   const res = runTypeCheck(`const x: number = "hi";`);
-//   assert(res.errors.length > 0, "Expected an error for number = string");
-// });
+test("const annotation mismatch reports error", () => {
+  const res = runTypeCheck(`const x: number = "hi";`);
+  assert(res.errors.length > 0, "Expected an error for number = string");
+});
 
-// test("addition type mismatch number + string", () => {
-//   const res = runTypeCheck(`const x = 1 + "a";`);
-//   assert(res.errors.length > 0, "Expected an error for 1 + 'a'");
-// });
+test("addition type mismatch number + string", () => {
+  const res = runTypeCheck(`const x = 1 + "a";`);
+  assert(res.errors.length > 0, "Expected an error for 1 + 'a'");
+});
 
-// test("multiplication enforces numbers", () => {
-//   const res = runTypeCheck(`const x = 2 * true; const y = "a" * 3;`);
-//   assert(res.errors.length >= 2, "Expected errors for non-number operands of *");
-// });
+test("multiplication enforces numbers", () => {
+  const res = runTypeCheck(`const x = 2 * true; const y = "a" * 3;`);
+  assert(res.errors.length >= 2, "Expected errors for non-number operands of *");
+});
 
-// test("ternary requires boolean condition", () => {
-//   const res = runTypeCheck(`const x = 1 ? 2 : 3;`);
-//   assert(res.errors.length > 0, "Expected error for non-boolean condition");
-// });
+test("ternary requires boolean condition", () => {
+  const res = runTypeCheck(`const x = 1 ? 2 : 3;`);
+  assert(res.errors.length > 0, "Expected error for non-boolean condition");
+});
 
-// test("ternary branches must match types", () => {
-//   const res = runTypeCheck(`const x = true ? 2 : "a";`);
-//   assert(res.errors.length > 0, "Expected error for mismatched ternary branches");
-// });
+test("ternary branches must match types", () => {
+  const res = runTypeCheck(`const x = true ? 2 : "a";`);
+  assert(res.errors.length > 0, "Expected error for mismatched ternary branches");
+});
 
 // test("array elements must be consistent", () => {
 //   const ok = runTypeCheck(`const xs = [1, 2, 3];`);
