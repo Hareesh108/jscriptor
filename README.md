@@ -1,6 +1,6 @@
-# 🛠️ Unify-JS — Minimal JavaScript Type Checker
+# 🛠️ Unify-JS — Lightweight Typed Superset for JavaScript
 
-**Unify-JS** is a lightweight, experimental **type checker** for JavaScript that catches type mismatches **before** runtime 🚀. It works directly with plain JS code — no TypeScript setup required.
+**Unify-JS** is a lightweight, **typed superset 🚀** of JavaScript that catches type errors early and keeps your codebase clean and maintainable—without any heavy setup
 
 ---
 
