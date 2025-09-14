@@ -1,10 +1,10 @@
 {
   "name": "jscriptor",
   "version": "0.0.1",
-  "description": "Minimalist testing framework for JavaScript",
+  "description": "A lightweight typed superset for JavaScript",
   "type": "commonjs",
   "bin": {
-    "unify-js": "src/cli.js"
+    "jscriptor": "src/cli.js"
   },
   "files": [
     "dist",

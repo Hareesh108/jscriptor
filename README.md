@@ -1,6 +1,6 @@
-# 🛠️ Unify-JS — Lightweight Typed Superset for JavaScript
+# 🛠️ JS Scriptor — Lightweight Typed Superset for JavaScript
 
-**Unify-JS** is a lightweight, **typed superset 🚀** of JavaScript that catches type errors early and keeps your codebase clean and maintainable—without any heavy setup
+**JS Scriptor** is a lightweight, **typed superset 🚀** of JavaScript that catches type errors early and keeps your codebase clean and maintainable—without any heavy setup.
 
 ---
 
@@ -16,8 +16,8 @@
 ## 📦 Installation
 
 ```bash
-npm install --save-dev @hareesh108/unify-js
-```
+npm install --save-dev jscriptor
+````
 
 ---
 
@@ -35,17 +35,17 @@ const doubledNum = double(num);
 const mixed = double(num) + double(str); // ❌ Type error
 ```
 
-2. Add to `package.json`:
+2. Add to `package.json` scripts:
 
 ```json
 {
   "scripts": {
-    "typecheck": "unify-js myProgram.js"
+    "typecheck": "jscriptor myProgram.js"
   }
 }
 ```
 
-3. Run:
+3. Run type checking:
 
 ```bash
 npm run typecheck
@@ -74,7 +74,7 @@ const result = identity(42);
 
 ```js
 const add1 = (x) => { return x + 1; };
-const res = add1("hello"); // Error
+const res = add1("hello"); // ❌ Error
 ```
 
 ---
@@ -99,4 +99,4 @@ const res = add1("hello"); // Error
 
 ## 📜 License
 
-MIT © 2025 [Hareesh Bhittam](https://github.com/Hareesh108/unify-js)
+MIT © 2025 [Hareesh Bhittam](https://github.com/Hareesh108/jscriptor)
