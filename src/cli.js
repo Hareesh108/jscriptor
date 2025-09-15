@@ -8,7 +8,7 @@ const { typeCheck } = require("./03-typecheck/types");
 const filePath = process.argv[2];
 
 if (!filePath) {
-  console.error("❌ Please provide a file to typecheck. Example: unify-js myProgram.js");
+  console.error("❌ Please provide a file to typecheck. Example: jscriptor myProgram.js");
   process.exit(1);
 }
 
