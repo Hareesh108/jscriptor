@@ -10,7 +10,6 @@
     "test": "jscriptor index.js"
   },
   "dependencies": {
-    "@hareesh108/unify-js": "^1.0.0",
-    "jscriptor": "^0.0.1"
+    "jscriptor": "^0.0.2"
   }
 }
