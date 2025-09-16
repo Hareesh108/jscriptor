@@ -19,8 +19,5 @@
     "minimal"
   ],
   "author": "Hareesh Bhittam",
-  "license": "MIT",
-  "scripts": {
-    "test": "node src/test/typecheck.spec.js"
-  }
+  "license": "MIT"
 }
