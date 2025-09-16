@@ -81,7 +81,7 @@ const res = add1("hello"); // ❌ Error
 
 ## 🛠 How It Works
 
-![Compiler Design](./docs/design.png)
+![Compiler Design](https://raw.githubusercontent.com/Hareesh108/jscriptor/main/docs/design.png)
 
 * **compile** → Parses JavaScript into an AST
 * **typeCheck** → Infers and validates types
