@@ -97,6 +97,62 @@ const res = add1("hello"); // ❌ Error
 
 ---
 
+## 🔧 Local Development Setup
+
+If you want to contribute or test **JS Scriptor** locally instead of installing from npm:
+
+1. **Clone the repo**
+
+   ```bash
+   git clone https://github.com/Hareesh108/jscriptor.git
+   cd jscriptor
+    ```
+
+2. **Install dependencies**
+
+   ```bash
+   npm install
+   ```
+
+3. **Link the CLI locally**
+   This makes the `jscriptor` command available on your system:
+
+   ```bash
+   npm link
+   ```
+
+4. **Test it on an example file**
+
+   ```bash
+   echo 'const x = 5; const y = "hi"; const z = x + y;' > examples/test.js
+   jscriptor examples/test.js
+   ```
+
+   ✅ You should see a type error reported for mixing `Number` and `String`.
+
+5. **Unlink when done**
+   If you no longer want the global link:
+
+   ```bash
+   npm unlink -g jscriptor
+   ```
+
+---
+
+### 🛠 Development Workflow
+
+* **Source code** lives in `src/`
+* **CLI entrypoint** → `src/cli.js`
+* **Parser** → `src/02-parse/`
+* **Type checker** → `src/03-typecheck/`
+* **Compiler** → `src/compile.js`
+
+You can run your local changes directly with:
+
+```bash
+node src/cli.js src/test/check.js
+```
+
 ## 📜 License
 
 MIT © 2025 [Hareesh Bhittam](https://github.com/Hareesh108/jscriptor)
