@@ -10,6 +10,6 @@
     "test": "jscriptor index.js"
   },
   "dependencies": {
-    "jscriptor": "^0.0.2"
+    "jscriptor": "^0.0.3"
   }
 }
