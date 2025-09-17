@@ -2,7 +2,7 @@
 const fs = require("fs");
 const path = require("path");
 const { compile } = require("./compile");
-const { typeCheck } = require("./03-typecheck/types");
+const { typeCheck } = require("./03-typecheck/typecheck");
 
 // Get the filename from command-line args
 const filePath = process.argv[2];
