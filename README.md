@@ -1,15 +1,29 @@
-# 🛠️ JS Scriptor — Lightweight Typed Superset for JavaScript
+# 🛠️ JScriptor — Lightweight Typed Superset for JavaScript
 
-**JS Scriptor** is a lightweight, **typed superset 🚀** of JavaScript that catches type errors early and keeps your codebase clean and maintainable—without any heavy setup.
+**JScriptor** is a lightweight, **typed superset 🚀** of JavaScript that catches type errors early and keeps your codebase clean and maintainable—without any heavy setup.
 
 ---
 
 ## ✨ Features
 
-* 🔍 Detects type mismatches in variables, function calls, and expressions
-* 🧠 Supports polymorphic functions (adaptable to multiple types)
-* 📦 Zero configuration — install and run
-* 💡 Clear CLI output for faster debugging
+* 🔍 **Type Inference**: Automatic type detection using Hindley-Milner type system
+* 🧠 **Polymorphic Functions**: Supports functions that work with multiple types
+* 📦 **Zero Configuration**: Works out of the box with sensible defaults
+* 💡 **Clear Error Reporting**: Detailed type error messages with file locations
+* ⚙️ **Configurable**: Customize type checking behavior via `jscriptor.config.js`
+* 🚀 **Fast**: Lightweight implementation with minimal overhead
+* 🔧 **CLI Tools**: Command-line interface for easy integration
+
+### Supported JavaScript Features
+
+* ✅ Variable declarations (`const`, `let`)
+* ✅ Arrow functions and function calls
+* ✅ Binary expressions (`+`, `-`, `*`, `/`, `==`, `!=`, etc.)
+* ✅ Conditional expressions (ternary operator)
+* ✅ Array and object literals
+* ✅ String, number, and boolean literals
+* ✅ Return statements
+* ✅ Block statements with scope management
 
 ---
 
@@ -17,7 +31,7 @@
 
 ```bash
 npm install --save-dev jscriptor
-````
+```
 
 ---
 
@@ -35,46 +49,91 @@ const doubledNum = double(num);
 const mixed = double(num) + double(str); // ❌ Type error
 ```
 
-2. Add to `package.json` scripts:
+1. Initialize configuration (optional):
+
+```bash
+jscriptor init
+```
+
+1. Add to `package.json` scripts:
 
 ```json
 {
   "scripts": {
-    "typecheck": "jscriptor myProgram.js"
+    "typecheck": "jscriptor check-all",
+    "typecheck:file": "jscriptor check"
   }
 }
 ```
 
-3. Run type checking:
+1. Run type checking:
 
 ```bash
+# Check all files based on config
 npm run typecheck
+
+# Check a specific file
+npm run typecheck:file src/app.js
 ```
 
 ---
 
-## 🖥 Example Output
+## 🖥️ Example Output
+
+JScriptor provides clear, detailed error messages:
 
 ```plaintext
-❌ Type mismatch in binary operation: cannot add Number to String
+📄 Checking src/errors.js...
+
+❌ Type Error: Cannot add Number to String
+   Location: src/errors.js:7:20
+   Code: const badMath = add(5, "hello");
+                        ^^^^^^^^^^^^^^^
+   Details: Binary operation '+' requires both operands to be the same type
+
+❌ Type Error: Cannot multiply Boolean with Number  
+   Location: src/errors.js:10:25
+   Code: const badMultiply = multiply(true, 10);
+                            ^^^^^^^^^^^^^^^^^^^
+   Details: Binary operation '*' requires both operands to be the same type
+
+📊 Summary:
+   Files checked: 1
+   Files with errors: 1
+   Total errors: 2
 ```
 
 ---
 
 ## 🧪 More Examples
 
-✅ No type errors:
+### ✅ Valid Code (No Type Errors)
 
 ```js
+// Function with type inference
 const identity = (x) => { return x; };
-const result = identity(42);
+const result = identity(42); // ✅ Number type inferred
+
+// Binary operations with matching types
+const sum = 5 + 10; // ✅ Number + Number
+const message = "Hello" + " World"; // ✅ String + String
+
+// Conditional expressions
+const max = a > b ? a : b; // ✅ Boolean condition
 ```
 
-❌ Type mismatch:
+### ❌ Type Errors
 
 ```js
+// Type mismatch in binary operation
+const badMath = 5 + "hello"; // ❌ Number + String
+
+// Wrong argument type for function
 const add1 = (x) => { return x + 1; };
-const res = add1("hello"); // ❌ Error
+const res = add1("hello"); // ❌ String passed to function expecting Number
+
+// Non-boolean condition in ternary
+const result = 42 ? "yes" : "no"; // ❌ Number used as condition
 ```
 
 ---
@@ -89,25 +148,123 @@ const res = add1("hello"); // ❌ Error
 
 ---
 
+## 🖥️ CLI Commands
+
+JScriptor provides a comprehensive command-line interface:
+
 ```bash
-# Initialize a new project
+# Initialize a new project with default configuration
 jscriptor init
 
-# Check a single file
+# Type check a single file
 jscriptor check src/app.js
 
-# Check entire project based on config
+# Type check all files based on jscriptor.config.js
 jscriptor check-all
 
-# Show help
+# Show help and usage information
 jscriptor help
 ```
 
+### Command Details
+
+* **`jscriptor init`**: Creates a `jscriptor.config.js` file with sensible defaults
+* **`jscriptor check <file>`**: Type checks a single JavaScript file
+* **`jscriptor check-all`**: Type checks all files matching patterns in your config
+* **`jscriptor help`**: Displays usage information and available commands
+
+---
+
+## ⚙️ Configuration
+
+JScriptor uses a `jscriptor.config.js` file to configure type checking behavior. Run `jscriptor init` to create a default configuration file.
+
+### Configuration Options
+
+```javascript
+module.exports = {
+  // Entry points - files or directories to type-check
+  include: [
+    "src/**/*.js",
+    "lib/**/*.js"
+  ],
+  
+  // Files to exclude from type checking
+  exclude: [
+    "node_modules/**/*",
+    "dist/**/*",
+    "build/**/*",
+    "**/*.test.js",
+    "**/*.spec.js"
+  ],
+  
+  // Output directory for compiled files (optional)
+  outDir: null,
+  
+  // Whether to watch for file changes
+  watch: false,
+  
+  // Strict mode settings
+  strict: {
+    // Require explicit type annotations
+    explicitTypes: false,
+    // Check for unused variables
+    unusedVars: false,
+    // Check for unreachable code
+    unreachableCode: false,
+  },
+  
+  // Type checking options
+  typeCheck: {
+    // Whether to infer types from usage
+    inferTypes: true,
+    // Whether to check function return types
+    checkReturnTypes: true,
+    // Whether to check parameter types
+    checkParameterTypes: true,
+  },
+  
+  // Compiler options
+  compiler: {
+    // Whether to preserve comments
+    preserveComments: true,
+    // Whether to generate source maps
+    sourceMaps: false,
+    // Target JavaScript version
+    target: "es2020",
+  }
+};
+```
+
+### Configuration Sections
+
+* **`include`**: Glob patterns for files to type check
+* **`exclude`**: Glob patterns for files to skip
+* **`strict`**: Strict mode settings for additional checks
+* **`typeCheck`**: Core type checking behavior
+* **`compiler`**: Compilation and output options
+
+---
+
 ## 📋 Roadmap
 
-* 🌐 Enhanced CLI output with code highlighting
-* 🧩 Plugin system for custom rules
-* 🖍 VS Code integration
+### Current Version (v0.0.4)
+
+* ✅ Basic type inference and checking
+* ✅ CLI interface with configuration support
+* ✅ Error reporting with file locations
+* ✅ Support for common JavaScript constructs
+
+### Upcoming Features
+
+* 🌐 Enhanced CLI output with syntax highlighting
+* 🧩 Plugin system for custom type rules
+* 🖍 VS Code extension for real-time type checking
+* 📚 Type annotations support (optional)
+* 🔄 Watch mode for continuous type checking
+* 📊 Performance optimizations for large codebases
+* 🧪 More comprehensive test coverage
+* 📖 Detailed documentation and tutorials
 
 ---
 
@@ -157,14 +314,53 @@ If you want to contribute or test **JS Scriptor** locally instead of installing 
 
 * **Source code** lives in `src/`
 * **CLI entrypoint** → `src/cli.js`
-* **Parser** → `src/02-parse/`
-* **Type checker** → `src/03-typecheck/`
+* **Tokenization** → `src/01-tokenize/`
+* **Parsing** → `src/02-parse/`
+* **Type checking** → `src/03-typecheck/`
 * **Compiler** → `src/compile.js`
+* **Configuration** → `src/config.js`
+
+#### Project Structure
+
+```text
+src/
+├── cli.js                 # Command-line interface
+├── compile.js             # Main compilation entry point
+├── config.js              # Configuration loading and processing
+├── 01-tokenize/           # Lexical analysis
+│   ├── tokenize.js        # Tokenizer implementation
+│   └── utils.js           # Token utilities
+├── 02-parse/              # Syntax analysis
+│   └── parse.js           # Parser implementation
+├── 03-typecheck/          # Type checking and inference
+│   ├── typecheck.js       # Main type checker
+│   ├── db.js              # Type database
+│   ├── errors.js          # Error reporting
+│   ├── scope.js           # Scope management
+│   ├── unification.js     # Type unification
+│   ├── type-utils.js      # Type utilities
+│   ├── utils.js           # General utilities
+│   └── visitors/          # AST visitors
+│       ├── index.js       # Visitor dispatcher
+│       ├── declarations.js # Declaration visitors
+│       ├── expressions.js  # Expression visitors
+│       ├── functions.js    # Function visitors
+│       ├── identifiers.js  # Identifier visitors
+│       └── literals.js     # Literal visitors
+└── test/                  # Test files
+    ├── check.js           # Test runner
+    ├── test.js            # Test utilities
+    └── typecheck.spec.js  # Type checker tests
+```
 
 You can run your local changes directly with:
 
 ```bash
+# Test the CLI
 jscriptor check ./src/test/check.js 
+
+# Test with example project
+jscriptor check-all
 ```
 
 ## 📜 License
