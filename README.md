@@ -78,29 +78,77 @@ npm run typecheck:file src/app.js
 
 ---
 
+## 📦 NPM Registry Example
+
+We've created a complete example project that demonstrates using JScriptor from the npm registry:
+
+### Quick Setup
+
+```bash
+# Clone the example
+git clone https://github.com/Hareesh108/jscriptor.git
+cd jscriptor/npm-example
+
+# Install JScriptor from npm registry
+npm install --save-dev jscriptor
+
+# Initialize configuration
+npm run init
+
+# Run type checking
+npm run typecheck
+```
+
+### Example Project Structure
+
+```text
+npm-example/
+├── package.json              # Dependencies and scripts
+├── jscriptor.config.js       # JScriptor configuration
+├── src/
+│   ├── simple-valid.js       # Valid code (no errors)
+│   ├── simple-errors.js      # Code with type errors
+│   └── utils.js              # Utility functions
+└── README.md                 # Example documentation
+```
+
+### Available Scripts
+
+* `npm run typecheck` - Check all files based on config
+* `npm run typecheck:file` - Check a specific file
+* `npm run init` - Initialize JScriptor configuration
+
+### Test Results
+
+The example demonstrates:
+
+* ✅ **Valid code**: `simple-valid.js` passes type checking
+* ❌ **Type errors**: `simple-errors.js` shows clear error messages
+* 🔧 **Configuration**: Customizable via `jscriptor.config.js`
+
+---
+
 ## 🖥️ Example Output
 
 JScriptor provides clear, detailed error messages:
 
 ```plaintext
-📄 Checking src/errors.js...
+📄 Checking src/simple-errors.js...
 
-❌ Type Error: Cannot add Number to String
-   Location: src/errors.js:7:20
-   Code: const badMath = add(5, "hello");
-                        ^^^^^^^^^^^^^^^
-   Details: Binary operation '+' requires both operands to be the same type
+❌ 1 error(s) found
 
-❌ Type Error: Cannot multiply Boolean with Number  
-   Location: src/errors.js:10:25
-   Code: const badMultiply = multiply(true, 10);
-                            ^^^^^^^^^^^^^^^^^^^
-   Details: Binary operation '*' requires both operands to be the same type
+1. [E_TERNARY_TEST_NOT_BOOL] Type mismatch in ternary: condition must be Boolean, got Number
+   at src/simple-errors.js:15:20
 
-📊 Summary:
-   Files checked: 1
-   Files with errors: 1
-   Total errors: 2
+ 13 | 
+ 14 | // Type error: ternary with non-boolean condition
+ 15 | const badTernary = num ? "yes" : "no";
+    |                    ^
+ 16 | 
+ 17 | console.log("This file has type errors!");
+   💡 Hint: The condition in a ternary operator must evaluate to a boolean
+
+📊 Summary: Found 1 type error(s) in src/simple-errors.js
 ```
 
 ---
@@ -129,11 +177,12 @@ const max = a > b ? a : b; // ✅ Boolean condition
 const badMath = 5 + "hello"; // ❌ Number + String
 
 // Wrong argument type for function
-const add1 = (x) => { return x + 1; };
-const res = add1("hello"); // ❌ String passed to function expecting Number
+const add = (x, y) => { return x + y; };
+const res = add(5, "hello"); // ❌ String passed to function expecting Number
 
 // Non-boolean condition in ternary
-const result = 42 ? "yes" : "no"; // ❌ Number used as condition
+const num = 5;
+const result = num ? "yes" : "no"; // ❌ Number used as condition
 ```
 
 ---
@@ -248,7 +297,7 @@ module.exports = {
 
 ## 📋 Roadmap
 
-### Current Version (v0.0.4)
+### Current Version (v0.0.5)
 
 * ✅ Basic type inference and checking
 * ✅ CLI interface with configuration support
