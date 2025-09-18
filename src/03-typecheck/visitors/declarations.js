@@ -47,6 +47,7 @@ function visitConstDeclaration(node) {
           reportError(
             `Type mismatch: missing field '${field.name}' in object literal`,
             node,
+            "E_OBJECT_FIELD_MISSING",
           );
           continue;
         }
@@ -76,6 +77,7 @@ function visitConstDeclaration(node) {
         reportError(
           `Type mismatch: value does not match any type in the union`,
           node,
+          "E_UNION_NO_MATCH",
         );
       }
     } else if (

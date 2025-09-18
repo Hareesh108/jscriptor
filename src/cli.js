@@ -3,6 +3,7 @@ const fs = require("fs");
 const path = require("path");
 const { compile } = require("./compile");
 const { typeCheck } = require("./03-typecheck/typecheck");
+const { formatErrorsPretty } = require("./03-typecheck/errors");
 
 // Get the filename from command-line args
 const filePath = process.argv[2];
@@ -26,11 +27,8 @@ try {
   const statements = compile(sourceCode);
   const result = typeCheck(statements);
 
-  console.log("✅ TypeCheck Result:");
-  console.log(JSON.stringify(result, null, 2));
-
   if (result.errors.length > 0) {
-    console.error("❌ Errors detected!");
+    console.error(formatErrorsPretty(sourceCode, path.basename(absolutePath)));
     process.exit(1);
   } else {
     console.log("🎉 No type errors!");

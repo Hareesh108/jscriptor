@@ -18,6 +18,7 @@ function visitBinaryExpression(node) {
       reportError(
         `Type mismatch in binary operation: cannot add ${leftConcrete} to ${rightConcrete}`,
         node,
+        "E_BIN_ADD_MISMATCH",
       );
       return createConcreteType("Number");
     }
@@ -26,6 +27,7 @@ function visitBinaryExpression(node) {
       reportError(
         `Type mismatch in binary operation: cannot add ${leftConcrete || "unknown"} to ${rightConcrete || "unknown"}`,
         node,
+        "E_BIN_ADD_MISMATCH",
       );
       return createConcreteType("Number");
     }
@@ -36,12 +38,14 @@ function visitBinaryExpression(node) {
       reportError(
         `Type mismatch: expected Number for left operand of '*' operator, got ${leftConcrete}`,
         node.left,
+        "E_BIN_MUL_LEFT_NOT_NUMBER",
       );
     }
     if (rightConcrete && rightConcrete !== "Number") {
       reportError(
         `Type mismatch: expected Number for right operand of '*' operator, got ${rightConcrete}`,
         node.right,
+        "E_BIN_MUL_RIGHT_NOT_NUMBER",
       );
     }
     if (!leftConcrete) unify(leftType, numberType, node.left);
@@ -53,11 +57,13 @@ function visitBinaryExpression(node) {
     reportError(
       `Type mismatch in binary operation: operands must have the same type, got ${leftConcrete} and ${rightConcrete}`,
       node,
+      "E_BIN_OPERANDS_MISMATCH",
     );
   } else if (!unify(leftType, rightType, node)) {
     reportError(
       `Type mismatch in binary operation: operands must have the same type`,
       node,
+      "E_BIN_OPERANDS_MISMATCH",
     );
   }
   return leftType;
@@ -88,6 +94,7 @@ function visitConditionalExpression(node) {
     reportError(
       `Type mismatch in ternary: condition must be Boolean, got ${testConcrete}`,
       node.test,
+      "E_TERNARY_TEST_NOT_BOOL",
     );
   } else {
     unify(testType, booleanType, node.test);
@@ -102,6 +109,7 @@ function visitConditionalExpression(node) {
     reportError(
       `Type mismatch in ternary: branches must have the same type, got ${consequentConcrete} and ${alternateConcrete}`,
       node,
+      "E_TERNARY_BRANCH_MISMATCH",
     );
   } else {
     unify(consequentType, alternateType, node);
