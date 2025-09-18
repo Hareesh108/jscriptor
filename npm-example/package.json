@@ -1,0 +1,22 @@
+{
+    "name": "jscriptor-npm-example",
+    "version": "1.0.0",
+    "description": "Example project using JScriptor from npm registry",
+    "type": "commonjs",
+    "scripts": {
+        "typecheck": "jscriptor check-all",
+        "typecheck:file": "jscriptor check",
+        "init": "jscriptor init"
+    },
+    "devDependencies": {
+        "jscriptor": "^0.0.5"
+    },
+    "keywords": [
+        "jscriptor",
+        "typescript",
+        "type-checking",
+        "example"
+    ],
+    "author": "JScriptor Example",
+    "license": "MIT"
+}
