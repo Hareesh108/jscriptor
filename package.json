@@ -1,8 +1,9 @@
 {
   "name": "jscriptor",
-  "version": "0.0.5",
-  "description": "A lightweight typed superset for JavaScript",
+  "version": "0.0.6",
+  "description": "A lightweight typed superset for JavaScript that catches type mismatches before runtime",
   "type": "commonjs",
+  "main": "src/cli.js",
   "bin": {
     "jscriptor": "src/cli.js"
   },
@@ -10,14 +11,42 @@
     "dist",
     "src"
   ],
+  "scripts": {
+    "test": "node src/test/test.js",
+    "typecheck": "node src/cli.js check-all"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Hareesh108/jscriptor.git"
+  },
+  "homepage": "https://github.com/Hareesh108/jscriptor#readme",
+  "bugs": {
+    "url": "https://github.com/Hareesh108/jscriptor/issues"
+  },
   "keywords": [
+    "javascript",
+    "js",
+    "types",
+    "javascript-library",
+    "checker",
+    "js-scriptor",
+    "jscriptor",
     "compiler",
     "typescript",
     "mvp",
     "test",
     "assert",
-    "minimal"
+    "minimal",
+    "type-checker",
+    "type-inference",
+    "hindley-milner"
   ],
-  "author": "Hareesh Bhittam",
-  "license": "MIT"
+  "author": {
+    "name": "Hareesh Bhittam",
+    "url": "https://github.com/Hareesh108"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=14.0.0"
+  }
 }

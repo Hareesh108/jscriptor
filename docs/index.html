@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>JScriptor - Lightweight Typed Superset for JavaScript</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      :root {
+        --primary: #6366f1;
+        --primary-dark: #4f46e5;
+        --secondary: #8b5cf6;
+        --accent: #06b6d4;
+        --success: #10b981;
+        --warning: #f59e0b;
+        --error: #ef4444;
+        --dark: #1e293b;
+        --darker: #0f172a;
+        --light: #f8fafc;
+        --gray: #64748b;
+        --border: #e2e8f0;
+        --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        --gradient: linear-gradient(
+          135deg,
+          var(--primary) 0%,
+          var(--secondary) 100%
+        );
+        --gradient-dark: linear-gradient(
+          135deg,
+          var(--darker) 0%,
+          var(--dark) 100%
+        );
+      }
+
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+        line-height: 1.6;
+        color: var(--dark);
+        background: var(--light);
+        overflow-x: hidden;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 2rem;
+      }
+
+      /* Header */
+      .header {
+        background: var(--gradient);
+        color: white;
+        padding: 4rem 0;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .header::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+        opacity: 0.3;
+      }
+
+      .header-content {
+        position: relative;
+        z-index: 1;
+      }
+
+      .logo {
+        font-size: 3.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .tagline {
+        font-size: 1.25rem;
+        font-weight: 300;
+        margin-bottom: 2rem;
+        opacity: 0.9;
+      }
+
+      .version {
+        display: inline-block;
+        background: rgba(255, 255, 255, 0.2);
+        padding: 0.5rem 1rem;
+        border-radius: 2rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        backdrop-filter: blur(10px);
+      }
+
+      /* Navigation */
+      .nav {
+        background: white;
+        box-shadow: var(--shadow);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+
+      .nav-content {
+        display: flex;
+        justify-content: center;
+        padding: 1rem 0;
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 2rem;
+        list-style: none;
+      }
+
+      .nav-links a {
+        text-decoration: none;
+        color: var(--gray);
+        font-weight: 500;
+        transition: color 0.3s ease;
+      }
+
+      .nav-links a:hover {
+        color: var(--primary);
+      }
+
+      /* Main Content */
+      .main {
+        padding: 4rem 0;
+      }
+
+      .section {
+        margin-bottom: 4rem;
+      }
+
+      .section-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        color: var(--dark);
+        position: relative;
+      }
+
+      .section-title::after {
+        content: "";
+        position: absolute;
+        bottom: -0.5rem;
+        left: 0;
+        width: 3rem;
+        height: 0.25rem;
+        background: var(--gradient);
+        border-radius: 0.125rem;
+      }
+
+      .section-subtitle {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin: 2rem 0 1rem 0;
+        color: var(--dark);
+      }
+
+      /* Cards */
+      .card {
+        background: white;
+        border-radius: 1rem;
+        padding: 2rem;
+        box-shadow: var(--shadow);
+        border: 1px solid var(--border);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      .card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+      }
+
+      .card-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        margin: 2rem 0;
+      }
+
+      /* Features */
+      .feature {
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .feature-icon {
+        width: 3rem;
+        height: 3rem;
+        background: var(--gradient);
+        border-radius: 0.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        flex-shrink: 0;
+      }
+
+      .feature-content h3 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: var(--dark);
+      }
+
+      .feature-content p {
+        color: var(--gray);
+        line-height: 1.6;
+      }
+
+      /* Code Blocks */
+      .code-block {
+        background: var(--darker);
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        margin: 1.5rem 0;
+        overflow-x: auto;
+        position: relative;
+      }
+
+      .code-block::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 0.5rem;
+        background: linear-gradient(90deg, #ff5f56, #ffbd2e, #27ca3f);
+        border-radius: 0.75rem 0.75rem 0 0;
+      }
+
+      .code-block pre {
+        margin: 0;
+        padding-top: 1rem;
+      }
+
+      .code-block code {
+        font-family: "Fira Code", "Monaco", "Consolas", monospace;
+        font-size: 0.875rem;
+        line-height: 1.6;
+      }
+
+      /* Buttons */
+      .btn {
+        display: inline-block;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        border: none;
+        cursor: pointer;
+        font-size: 1rem;
+      }
+
+      .btn-primary {
+        background: var(--gradient);
+        color: white;
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-1px);
+        box-shadow: var(--shadow-lg);
+      }
+
+      .btn-secondary {
+        background: white;
+        color: var(--primary);
+        border: 2px solid var(--primary);
+      }
+
+      .btn-secondary:hover {
+        background: var(--primary);
+        color: white;
+      }
+
+      /* Badges */
+      .badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 1rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      .badge-success {
+        background: rgba(16, 185, 129, 0.1);
+        color: var(--success);
+      }
+
+      .badge-error {
+        background: rgba(239, 68, 68, 0.1);
+        color: var(--error);
+      }
+
+      .badge-warning {
+        background: rgba(245, 158, 11, 0.1);
+        color: var(--warning);
+      }
+
+      /* Lists */
+      .feature-list {
+        list-style: none;
+        margin: 1.5rem 0;
+      }
+
+      .feature-list li {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 0.75rem;
+        padding: 0.75rem;
+        background: rgba(99, 102, 241, 0.05);
+        border-radius: 0.5rem;
+        border-left: 3px solid var(--primary);
+      }
+
+      .feature-list li::before {
+        content: "✓";
+        color: var(--success);
+        font-weight: bold;
+        font-size: 1.25rem;
+      }
+
+      /* Installation */
+      .install-section {
+        background: var(--gradient-dark);
+        color: white;
+        padding: 3rem 0;
+        border-radius: 1rem;
+        margin: 3rem 0;
+      }
+
+      .install-section .section-title {
+        color: white;
+      }
+
+      .install-section .section-title::after {
+        background: white;
+      }
+
+      /* Footer */
+      .footer {
+        background: var(--darker);
+        color: white;
+        padding: 3rem 0;
+        text-align: center;
+      }
+
+      .footer-content {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+        margin-bottom: 2rem;
+      }
+
+      .footer-section h3 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+      }
+
+      .footer-section a {
+        color: var(--gray);
+        text-decoration: none;
+        transition: color 0.3s ease;
+      }
+
+      .footer-section a:hover {
+        color: white;
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        .container {
+          padding: 0 1rem;
+        }
+
+        .logo {
+          font-size: 2.5rem;
+        }
+
+        .nav-links {
+          flex-direction: column;
+          gap: 1rem;
+        }
+
+        .card-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .section-title {
+          font-size: 2rem;
+        }
+      }
+
+      /* Animations */
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .fade-in-up {
+        animation: fadeInUp 0.6s ease-out;
+      }
+
+      /* Syntax highlighting */
+      .token.comment {
+        color: #6a9955;
+      }
+
+      .token.string {
+        color: #ce9178;
+      }
+
+      .token.number {
+        color: #b5cea8;
+      }
+
+      .token.keyword {
+        color: #569cd6;
+      }
+
+      .token.function {
+        color: #dcdcaa;
+      }
+
+      .token.operator {
+        color: #d4d4d4;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Header -->
+    <header class="header">
+      <div class="container">
+        <div class="header-content fade-in-up">
+          <h1 class="logo">🛠️ JScriptor</h1>
+          <p class="tagline">Lightweight Typed Superset for JavaScript</p>
+          <span class="version">v0.0.6</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="nav">
+      <div class="container">
+        <div class="nav-content">
+          <ul class="nav-links">
+            <li><a href="#features">Features</a></li>
+            <li><a href="#installation">Installation</a></li>
+            <li><a href="#usage">Usage</a></li>
+            <li><a href="#examples">Examples</a></li>
+            <li><a href="#configuration">Configuration</a></li>
+            <li><a href="#development">Development</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main">
+      <div class="container">
+        <!-- Features Section -->
+        <section id="features" class="section">
+          <h2 class="section-title">✨ Features</h2>
+          <p
+            style="font-size: 1.125rem; color: var(--gray); margin-bottom: 2rem"
+          >
+            JScriptor is a lightweight, typed superset of JavaScript that
+            catches type errors early and keeps your codebase clean and
+            maintainable—without any heavy setup.
+          </p>
+
+          <div class="card-grid">
+            <div class="card">
+              <div class="feature">
+                <div class="feature-icon">🔍</div>
+                <div class="feature-content">
+                  <h3>Type Inference</h3>
+                  <p>
+                    Automatic type detection using Hindley-Milner type system
+                    with advanced unification algorithms.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="feature">
+                <div class="feature-icon">🧠</div>
+                <div class="feature-content">
+                  <h3>Polymorphic Functions</h3>
+                  <p>
+                    Supports functions that work with multiple types, enabling
+                    flexible and reusable code.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="feature">
+                <div class="feature-icon">📦</div>
+                <div class="feature-content">
+                  <h3>Zero Configuration</h3>
+                  <p>
+                    Works out of the box with sensible defaults. No complex
+                    setup required.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="feature">
+                <div class="feature-icon">💡</div>
+                <div class="feature-content">
+                  <h3>Clear Error Reporting</h3>
+                  <p>
+                    Detailed type error messages with file locations and helpful
+                    hints for faster debugging.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="feature">
+                <div class="feature-icon">⚙️</div>
+                <div class="feature-content">
+                  <h3>Configurable</h3>
+                  <p>
+                    Customize type checking behavior via
+                    <code>jscriptor.config.js</code> for your project needs.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="feature">
+                <div class="feature-icon">🚀</div>
+                <div class="feature-content">
+                  <h3>Fast & Lightweight</h3>
+                  <p>
+                    Minimal overhead with optimized performance for large
+                    codebases.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <h3 class="section-subtitle">Supported JavaScript Features</h3>
+          <ul class="feature-list">
+            <li>
+              Variable declarations (<code>const</code>, <code>let</code>)
+            </li>
+            <li>Arrow functions and function calls</li>
+            <li>
+              Binary expressions (<code>+</code>, <code>-</code>,
+              <code>*</code>, <code>/</code>, <code>==</code>, <code>!=</code>,
+              etc.)
+            </li>
+            <li>Conditional expressions (ternary operator)</li>
+            <li>Array and object literals</li>
+            <li>String, number, and boolean literals</li>
+            <li>Return statements</li>
+            <li>Block statements with scope management</li>
+          </ul>
+        </section>
+
+        <!-- Installation Section -->
+        <section id="installation" class="install-section">
+          <div class="container">
+            <h2 class="section-title">📦 Installation</h2>
+            <p style="font-size: 1.125rem; margin-bottom: 2rem; opacity: 0.9">
+              Install JScriptor as a development dependency in your project.
+            </p>
+
+            <div class="code-block">
+              <pre><code class="language-bash">npm install --save-dev jscriptor</code></pre>
+            </div>
+
+            <div style="text-align: center; margin-top: 2rem">
+              <a
+                href="https://www.npmjs.com/package/jscriptor"
+                class="btn btn-primary"
+                target="_blank"
+              >
+                View on NPM
+              </a>
+            </div>
+          </div>
+        </section>
+
+        <!-- Usage Section -->
+        <section id="usage" class="section">
+          <h2 class="section-title">⚡ Quick Start</h2>
+
+          <div class="card">
+            <h3 class="section-subtitle">1. Initialize Configuration</h3>
+            <div class="code-block">
+              <pre><code class="language-bash">jscriptor init</code></pre>
+            </div>
+            <p>
+              This creates a <code>jscriptor.config.js</code> file with sensible
+              defaults.
+            </p>
+          </div>
+
+          <br />
+
+          <div class="card">
+            <h3 class="section-subtitle">2. Add to package.json</h3>
+            <div class="code-block">
+              <pre><code class="language-json">{
+  "scripts": {
+    "typecheck": "jscriptor check-all",
+    "typecheck:file": "jscriptor check"
+  }
+}</code></pre>
+            </div>
+          </div>
+
+          <br />
+
+          <div class="card">
+            <h3 class="section-subtitle">3. Run Type Checking</h3>
+            <div class="code-block">
+              <pre><code class="language-bash"># Check all files based on config
+npm run typecheck
+
+# Check a specific file
+npm run typecheck:file src/app.js</code></pre>
+            </div>
+          </div>
+
+          <h3 class="section-subtitle">CLI Commands</h3>
+          <div class="card-grid">
+            <div class="card">
+              <h4><code>jscriptor init</code></h4>
+              <p>
+                Creates a <code>jscriptor.config.js</code> file with sensible
+                defaults
+              </p>
+            </div>
+            <div class="card">
+              <h4><code>jscriptor check &lt;file&gt;</code></h4>
+              <p>Type checks a single JavaScript file</p>
+            </div>
+            <div class="card">
+              <h4><code>jscriptor check-all</code></h4>
+              <p>Type checks all files matching patterns in your config</p>
+            </div>
+            <div class="card">
+              <h4><code>jscriptor help</code></h4>
+              <p>Displays usage information and available commands</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Examples Section -->
+        <section id="examples" class="section">
+          <h2 class="section-title">🧪 Examples</h2>
+
+          <div class="card">
+            <h3 class="section-subtitle">✅ Valid Code (No Type Errors)</h3>
+            <div class="code-block">
+              <pre><code class="language-javascript">// Function with type inference
+const identity = (x) => { return x; };
+const result = identity(42); // ✅ Number type inferred
+
+// Binary operations with matching types
+const sum = 5 + 10; // ✅ Number + Number
+const message = "Hello" + " World"; // ✅ String + String
+
+// Conditional expressions
+const max = a > b ? a : b; // ✅ Boolean condition</code></pre>
+            </div>
+          </div>
+
+          <br />
+
+          <div class="card">
+            <h3 class="section-subtitle">❌ Type Errors</h3>
+            <div class="code-block">
+              <pre><code class="language-javascript">// Type mismatch in binary operation
+const badMath = 5 + "hello"; // ❌ Number + String
+
+// Wrong argument type for function
+const add = (x, y) => { return x + y; };
+const res = add(5, "hello"); // ❌ String passed to function expecting Number
+
+// Non-boolean condition in ternary
+const num = 5;
+const result = num ? "yes" : "no"; // ❌ Number used as condition</code></pre>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3 class="section-subtitle">🖥️ Example Output</h3>
+            <div class="code-block">
+              <pre><code class="language-text">📄 Checking src/simple-errors.js...
+
+❌ 1 error(s) found
+
+1. [E_TERNARY_TEST_NOT_BOOL] Type mismatch in ternary: condition must be Boolean, got Number
+   at src/simple-errors.js:15:20
+
+ 13 | 
+ 14 | // Type error: ternary with non-boolean condition
+ 15 | const badTernary = num ? "yes" : "no";
+    |                    ^
+ 16 | 
+ 17 | console.log("This file has type errors!");
+   💡 Hint: The condition in a ternary operator must evaluate to a boolean
+
+📊 Summary: Found 1 type error(s) in src/simple-errors.js</code></pre>
+            </div>
+          </div>
+        </section>
+
+        <!-- Configuration Section -->
+        <section id="configuration" class="section">
+          <h2 class="section-title">⚙️ Configuration</h2>
+          <p
+            style="font-size: 1.125rem; color: var(--gray); margin-bottom: 2rem"
+          >
+            JScriptor uses a <code>jscriptor.config.js</code> file to configure
+            type checking behavior. Run <code>jscriptor init</code> to create a
+            default configuration file.
+          </p>
+
+          <div class="card">
+            <h3 class="section-subtitle">Configuration Options</h3>
+            <div class="code-block">
+              <pre><code class="language-javascript">module.exports = {
+  // Entry points - files or directories to type-check
+  include: [
+    "src/**/*.js",
+    "lib/**/*.js"
+  ],
+  
+  // Files to exclude from type checking
+  exclude: [
+    "node_modules/**/*",
+    "dist/**/*",
+    "build/**/*",
+    "**/*.test.js",
+    "**/*.spec.js"
+  ],
+  
+  // Output directory for compiled files (optional)
+  outDir: null,
+  
+  // Whether to watch for file changes
+  watch: false,
+  
+  // Strict mode settings
+  strict: {
+    // Require explicit type annotations
+    explicitTypes: false,
+    // Check for unused variables
+    unusedVars: false,
+    // Check for unreachable code
+    unreachableCode: false,
+  },
+  
+  // Type checking options
+  typeCheck: {
+    // Whether to infer types from usage
+    inferTypes: true,
+    // Whether to check function return types
+    checkReturnTypes: true,
+    // Whether to check parameter types
+    checkParameterTypes: true,
+  },
+  
+  // Compiler options
+  compiler: {
+    // Whether to preserve comments
+    preserveComments: true,
+    // Whether to generate source maps
+    sourceMaps: false,
+    // Target JavaScript version
+    target: "es2020",
+  }
+};</code></pre>
+            </div>
+          </div>
+
+          <div class="card-grid">
+            <div class="card">
+              <h4><code>include</code></h4>
+              <p>Glob patterns for files to type check</p>
+            </div>
+            <div class="card">
+              <h4><code>exclude</code></h4>
+              <p>Glob patterns for files to skip</p>
+            </div>
+            <div class="card">
+              <h4><code>strict</code></h4>
+              <p>Strict mode settings for additional checks</p>
+            </div>
+            <div class="card">
+              <h4><code>typeCheck</code></h4>
+              <p>Core type checking behavior</p>
+            </div>
+            <div class="card">
+              <h4><code>compiler</code></h4>
+              <p>Compilation and output options</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- How It Works Section -->
+        <section class="section">
+          <h2 class="section-title">🛠 How It Works</h2>
+          <div class="card">
+            <div style="text-align: center; margin-bottom: 2rem">
+              <img
+                src="design.png"
+                alt="JScriptor Architecture"
+                style="
+                  max-width: 100%;
+                  height: auto;
+                  border-radius: 0.5rem;
+                  box-shadow: var(--shadow);
+                "
+              />
+            </div>
+            <div class="card-grid">
+              <div class="card">
+                <h4>🔤 Tokenize</h4>
+                <p>Parses JavaScript into tokens using lexical analysis</p>
+              </div>
+              <div class="card">
+                <h4>🌳 Parse</h4>
+                <p>Builds an Abstract Syntax Tree (AST) from tokens</p>
+              </div>
+              <div class="card">
+                <h4>🔍 Type Check</h4>
+                <p>Infers and validates types using Hindley-Milner system</p>
+              </div>
+              <div class="card">
+                <h4>📝 Report</h4>
+                <p>Generates clear error messages with file locations</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Development Section -->
+        <section id="development" class="section">
+          <h2 class="section-title">🔧 Development</h2>
+          <p
+            style="font-size: 1.125rem; color: var(--gray); margin-bottom: 2rem"
+          >
+            Want to contribute or test JScriptor locally? Here's how to set up
+            the development environment.
+          </p>
+
+          <div class="card">
+            <h3 class="section-subtitle">Local Development Setup</h3>
+            <div class="code-block">
+              <pre><code class="language-bash"># Clone the repository
+git clone https://github.com/Hareesh108/jscriptor.git
+cd jscriptor
+
+# Install dependencies
+npm install
+
+# Link the CLI locally
+npm link
+
+# Test on an example file
+echo 'const x = 5; const y = "hi"; const z = x + y;' > test.js
+jscriptor test.js
+
+# Unlink when done
+npm unlink -g jscriptor</code></pre>
+            </div>
+          </div>
+
+          <br />
+
+          <div class="card">
+            <h3 class="section-subtitle">Project Structure</h3>
+            <div class="code-block">
+              <pre><code class="language-text">src/
+├── cli.js                 # Command-line interface
+├── compile.js             # Main compilation entry point
+├── config.js              # Configuration loading and processing
+├── 01-tokenize/           # Lexical analysis
+│   ├── tokenize.js        # Tokenizer implementation
+│   └── utils.js           # Token utilities
+├── 02-parse/              # Syntax analysis
+│   └── parse.js           # Parser implementation
+├── 03-typecheck/          # Type checking and inference
+│   ├── typecheck.js       # Main type checker
+│   ├── db.js              # Type database
+│   ├── errors.js          # Error reporting
+│   ├── scope.js           # Scope management
+│   ├── unification.js     # Type unification
+│   ├── type-utils.js      # Type utilities
+│   ├── utils.js           # General utilities
+│   └── visitors/          # AST visitors
+│       ├── index.js       # Visitor dispatcher
+│       ├── declarations.js # Declaration visitors
+│       ├── expressions.js  # Expression visitors
+│       ├── functions.js    # Function visitors
+│       ├── identifiers.js  # Identifier visitors
+│       └── literals.js     # Literal visitors
+└── test/                  # Test files
+    ├── check.js           # Test runner
+    ├── test.js            # Test utilities
+    └── typecheck.spec.js  # Type checker tests</code></pre>
+            </div>
+          </div>
+        </section>
+
+        <!-- Roadmap Section -->
+        <section class="section">
+          <h2 class="section-title">📋 Roadmap</h2>
+          <div class="card-grid">
+            <div class="card">
+              <h3 class="section-subtitle">Current Version (v0.0.5)</h3>
+              <ul class="feature-list">
+                <li>Basic type inference and checking</li>
+                <li>CLI interface with configuration support</li>
+                <li>Error reporting with file locations</li>
+                <li>Support for common JavaScript constructs</li>
+              </ul>
+            </div>
+            <div class="card">
+              <h3 class="section-subtitle">Upcoming Features</h3>
+              <ul class="feature-list">
+                <li>Enhanced CLI output with syntax highlighting</li>
+                <li>Plugin system for custom type rules</li>
+                <li>VS Code extension for real-time type checking</li>
+                <li>Type annotations support (optional)</li>
+                <li>Watch mode for continuous type checking</li>
+                <li>Performance optimizations for large codebases</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-section">
+            <h3>JScriptor</h3>
+            <p>
+              A lightweight typed superset for JavaScript that catches type
+              errors early and keeps your codebase clean and maintainable.
+            </p>
+          </div>
+          <div class="footer-section">
+            <h3>Links</h3>
+            <p>
+              <a href="https://github.com/Hareesh108/jscriptor"
+                >GitHub Repository</a
+              >
+            </p>
+            <p>
+              <a href="https://www.npmjs.com/package/jscriptor">NPM Package</a>
+            </p>
+            <p>
+              <a href="https://github.com/Hareesh108/jscriptor/issues"
+                >Report Issues</a
+              >
+            </p>
+          </div>
+          <div class="footer-section">
+            <h3>License</h3>
+            <p>
+              MIT © 2025
+              <a href="https://github.com/Hareesh108">Hareesh Bhittam</a>
+            </p>
+          </div>
+        </div>
+        <div
+          style="
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 2rem;
+            margin-top: 2rem;
+            text-align: center;
+            color: var(--gray);
+          "
+        >
+          <p>Made with ❤️ for the JavaScript community</p>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    <script>
+      // Smooth scrolling for navigation links
+      document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+        anchor.addEventListener("click", function (e) {
+          e.preventDefault();
+          const target = document.querySelector(this.getAttribute("href"));
+          if (target) {
+            target.scrollIntoView({
+              behavior: "smooth",
+              block: "start",
+            });
+          }
+        });
+      });
+
+      // Add fade-in animation to sections on scroll
+      const observerOptions = {
+        threshold: 0.1,
+        rootMargin: "0px 0px -50px 0px",
+      };
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("fade-in-up");
+          }
+        });
+      }, observerOptions);
+
+      document.querySelectorAll(".section").forEach((section) => {
+        observer.observe(section);
+      });
+    </script>
+  </body>
+</html>

@@ -297,7 +297,7 @@ module.exports = {
 
 ## 📋 Roadmap
 
-### Current Version (v0.0.5)
+### Current Version (v0.0.6)
 
 * ✅ Basic type inference and checking
 * ✅ CLI interface with configuration support
