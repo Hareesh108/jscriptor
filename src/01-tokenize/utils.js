@@ -13,6 +13,7 @@ const TOKEN_PATTERNS = [
   // Keywords
   { type: "CONST", regex: /^const\b/ }, // const keyword
   { type: "RETURN", regex: /^return\b/ }, // return keyword
+  { type: "REQUIRE", regex: /^require\b/ }, // require keyword
 
   // Type annotation keywords (must come before other identifiers)
   { type: "TYPE_NUMBER", regex: /^number\b/ }, // TypeScript's number type
@@ -43,6 +44,7 @@ const TOKEN_PATTERNS = [
   { type: "RIGHT_BRACKET", regex: /^\]/ }, // ]
   { type: "COMMA", regex: /^,/ }, // , for function arguments
   { type: "SEMICOLON", regex: /^;/ }, // ; for statement endings
+  { type: "DOT", regex: /^\./ }, // . for property access
 
   // Literals and identifiers
   { type: "BOOLEAN", regex: /^(true|false)\b/ }, // Boolean literals

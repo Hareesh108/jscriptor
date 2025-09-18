@@ -100,6 +100,9 @@ function parse(tokens) {
       statement = parseConstDeclaration();
     } else if (check("RETURN")) {
       statement = parseReturnStatement();
+    } else if (check("REQUIRE")) {
+      // Handle require statements as const declarations
+      statement = parseConstDeclaration();
     } else {
       throw new Error(`Unexpected token type: ${peek().type}`);
     }
@@ -138,10 +141,25 @@ function parse(tokens) {
     return returnStatement;
   }
 
+
   /**
    * Parse a const declaration
    */
   function parseConstDeclaration() {
+    // Handle require statements (const x = require('module'))
+    if (check("REQUIRE")) {
+      next(); // consume REQUIRE
+      expect("LEFT_PAREN", "Expected '(' after require");
+      const modulePath = expect("STRING", "Expected module path string").value;
+      expect("RIGHT_PAREN", "Expected ')' after module path");
+      
+      return {
+        type: "RequireStatement",
+        module: modulePath.slice(1, -1), // Remove quotes
+        position: peek().position
+      };
+    }
+    
     // Consume the 'const' keyword
     expect("CONST", "Expected 'const' keyword");
 
@@ -227,6 +245,7 @@ function parse(tokens) {
         left,
         operator,
         right,
+        position: left.position || peek().position,
       };
     }
 
@@ -690,6 +709,7 @@ function parse(tokens) {
       node = {
         type: "StringLiteral",
         value: token.value.slice(1, -1), // Remove the quotes
+        position: token.position,
       };
     } else if (check("NUMBER")) {
       // Number literal
@@ -699,6 +719,7 @@ function parse(tokens) {
       node = {
         type: "NumericLiteral",
         value,
+        position: token.position,
       };
     } else if (check("BOOLEAN")) {
       // Boolean literal
@@ -706,6 +727,7 @@ function parse(tokens) {
       node = {
         type: "BooleanLiteral",
         value: token.value === "true",
+        position: token.position,
       };
     } else if (check("IDENTIFIER")) {
       // Variable reference or function call
@@ -713,7 +735,24 @@ function parse(tokens) {
       node = {
         type: "Identifier",
         name: token.value,
+        position: token.position,
       };
+
+      // Check for member access (object.property)
+      while (check("DOT")) {
+        next(); // consume DOT
+        const property = expect("IDENTIFIER", "Expected property name after dot").value;
+        node = {
+          type: "MemberExpression",
+          object: node,
+          property: {
+            type: "Identifier",
+            name: property,
+            position: peek().position
+          },
+          position: node.position
+        };
+      }
 
       // If the next token is a '(', this is a function call
       if (check("LEFT_PAREN")) {
@@ -754,6 +793,7 @@ function parse(tokens) {
       type: "CallExpression",
       callee,
       arguments: args,
+      position: callee.position,
     };
   }
 

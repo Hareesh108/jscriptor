@@ -89,6 +89,20 @@ const res = add1("hello"); // ❌ Error
 
 ---
 
+```bash
+# Initialize a new project
+jscriptor init
+
+# Check a single file
+jscriptor check src/app.js
+
+# Check entire project based on config
+jscriptor check-all
+
+# Show help
+jscriptor help
+```
+
 ## 📋 Roadmap
 
 * 🌐 Enhanced CLI output with code highlighting
@@ -150,7 +164,7 @@ If you want to contribute or test **JS Scriptor** locally instead of installing 
 You can run your local changes directly with:
 
 ```bash
-node src/cli.js src/test/check.js
+jscriptor check ./src/test/check.js 
 ```
 
 ## 📜 License

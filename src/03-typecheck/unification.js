@@ -12,6 +12,7 @@ function reportTypeMismatch(typeId1, typeId2, node) {
   reportError(
     `Type mismatch: cannot unify ${type1Name} with ${type2Name}`,
     node,
+    "E_UNIFY_MISMATCH",
   );
   return false;
 }
