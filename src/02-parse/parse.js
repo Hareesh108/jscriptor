@@ -227,6 +227,7 @@ function parse(tokens) {
         left,
         operator,
         right,
+        position: left.position || peek().position,
       };
     }
 
@@ -690,6 +691,7 @@ function parse(tokens) {
       node = {
         type: "StringLiteral",
         value: token.value.slice(1, -1), // Remove the quotes
+        position: token.position,
       };
     } else if (check("NUMBER")) {
       // Number literal
@@ -699,6 +701,7 @@ function parse(tokens) {
       node = {
         type: "NumericLiteral",
         value,
+        position: token.position,
       };
     } else if (check("BOOLEAN")) {
       // Boolean literal
@@ -706,6 +709,7 @@ function parse(tokens) {
       node = {
         type: "BooleanLiteral",
         value: token.value === "true",
+        position: token.position,
       };
     } else if (check("IDENTIFIER")) {
       // Variable reference or function call
@@ -713,6 +717,7 @@ function parse(tokens) {
       node = {
         type: "Identifier",
         name: token.value,
+        position: token.position,
       };
 
       // If the next token is a '(', this is a function call
@@ -754,6 +759,7 @@ function parse(tokens) {
       type: "CallExpression",
       callee,
       arguments: args,
+      position: callee.position,
     };
   }
 
